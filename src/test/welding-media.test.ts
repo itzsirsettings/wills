@@ -56,7 +56,7 @@ describe('supplied welding and interiors media', () => {
   it('uses the new brand manifest and retains the original media', () => {
     const manifest = JSON.parse(readFileSync('public/manifest.json', 'utf8'));
     expect(manifest.name).toBe('Wills Group of Company');
-    expect(manifest.icons[0].src).toBe('/media/wills/optimized/wills-group-logo.png');
+    expect(manifest.icons[0].src).toBe('/media/wills/optimized/branding/logo-192.png');
     expect(existsSync('public/images/thewworks-logo.png')).toBe(true);
     expect(existsSync('public/Surreal.mp4')).toBe(true);
   });

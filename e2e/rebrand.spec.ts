@@ -1,5 +1,26 @@
 import { test, expect } from '@playwright/test';
 
+test('company logo appears in share metadata, browser icons and app manifest', async ({ page, request }) => {
+  const sharingPath = '/media/wills/optimized/branding/company-logo-share.jpg';
+  const initial = await request.get('/');
+  expect(initial.ok()).toBe(true);
+  const html = await initial.text();
+  expect(html).toContain(sharingPath);
+  expect(html).toContain('og:image:width');
+  expect(html).toContain('/media/wills/optimized/branding/apple-touch-icon.png');
+  await page.goto('/');
+  await expect(page.locator('head meta[property="og:image"]')).toHaveAttribute('content', new RegExp(`${sharingPath.replaceAll('.', '\\.')}$`));
+  const iconPaths = await page.locator('link[rel="icon"], link[rel="shortcut icon"], link[rel="apple-touch-icon"]').evaluateAll(links => links.map(link => link.getAttribute('href')!));
+  const manifest = await (await request.get('/manifest.json')).json();
+  for (const asset of [sharingPath, ...iconPaths, ...manifest.icons.map((icon: { src: string }) => icon.src)]) {
+    expect((await request.get(asset)).ok()).toBe(true);
+  }
+  await page.goto('/privacy-policy');
+  await expect(page.getByRole('heading', { name: 'Privacy Policy', exact: true })).toBeVisible();
+  await expect(page.locator('head meta[name="twitter:image"]')).toHaveAttribute('content', new RegExp(`${sharingPath.replaceAll('.', '\\.')}$`));
+  await expect(page.locator('.header-logo img')).toHaveAttribute('src', '/media/wills/optimized/wills-group-logo.png');
+});
+
 test('gallery previews stay uniform and videos load only after selection', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.addInitScript(() => localStorage.setItem('wills-group:cookie-consent', 'accepted'));

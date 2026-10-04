@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils';
 import { brand } from '@/lib/brand';
 
-export const THEWWORKS_LOGO_SRC = brand.logo;
+export const WILLS_LOGO_SRC = brand.logo;
 
 interface BrandLogoProps {
   className?: string;
@@ -42,7 +42,7 @@ const BrandLogo = ({
       )}
     >
       <img
-        src={THEWWORKS_LOGO_SRC}
+        src={WILLS_LOGO_SRC}
         alt={showText ? '' : `${brand.name} logo`}
         aria-hidden={showText ? 'true' : undefined}
         className="h-full w-full object-contain"

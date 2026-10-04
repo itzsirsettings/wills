@@ -30,4 +30,12 @@ describe('rebranded static SEO shell', () => {
     expect(sitemap.getElementsByTagName('url').length).toBe(0);
     expect(read('public', 'sitemap.xml')).not.toContain('thewworksict.com');
   });
+  it('uses the supplied company logo for previews, browser tabs and Apple home-screen icons', () => {
+    const document = shell();
+    expect(document.querySelector('meta[property="og:image"]')?.getAttribute('content')).toBe('/media/wills/optimized/branding/company-logo-share.jpg');
+    expect(document.querySelector('meta[name="twitter:image"]')?.getAttribute('content')).toBe('/media/wills/optimized/branding/company-logo-share.jpg');
+    expect(document.querySelector('link[rel="icon"][sizes="32x32"]')?.getAttribute('href')).toBe('/media/wills/optimized/branding/logo-32.png');
+    expect(document.querySelector('link[rel="apple-touch-icon"]')?.getAttribute('sizes')).toBe('180x180');
+    expect(document.querySelector('meta[name="msapplication-config"]')?.getAttribute('content')).toBe('/browserconfig.xml');
+  });
 });

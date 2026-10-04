@@ -57,6 +57,19 @@ describe('server SEO helpers', () => {
     expect(html).toContain('"@type": "WebPage"');
   });
 
+  it.each(['/', '/privacy-policy', '/terms-of-use', '/cookie-policy', '/security'])('uses the company logo for crawler previews on %s', route => {
+    const html = injectRouteSeo(htmlShell, route);
+    const image = 'https://wills.example/media/wills/optimized/branding/company-logo-share.jpg';
+    expect(html).toContain(`<meta property="og:image" content="${image}" />`);
+    expect(html).toContain(`<meta name="twitter:image" content="${image}" />`);
+    expect(html).toContain('<meta property="og:image:alt" content="Wills Group of Company logo" />');
+    expect(html).toContain('<meta property="og:image:width" content="1200" />');
+    expect(html).toContain('<meta property="og:image:height" content="630" />');
+    expect(html).toContain('<meta property="og:image:type" content="image/jpeg" />');
+    expect(html).toContain('https://wills.example/media/wills/optimized/wills-group-logo-512.png');
+    expect(html).not.toContain('old.png');
+  });
+
   it('keeps public routes indexable and private routes noindex', () => {
     expect(getRouteSeo('/').robots).toContain('index, follow');
     expect(getRouteSeo('/store').robots).toContain('index, follow');

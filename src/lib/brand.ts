@@ -10,6 +10,7 @@ export const brand = {
   address: clean(import.meta.env.VITE_BUSINESS_ADDRESS),
   siteUrl: (clean(import.meta.env.VITE_PUBLIC_SITE_URL) || 'https://wills-production-beec.up.railway.app').replace(/\/$/, ''),
   logo: '/media/wills/optimized/wills-group-logo.png',
+  shareImage: '/media/wills/optimized/branding/company-logo-share.jpg',
 };
 
 export const mediaPath = (number: string, small = false) =>

@@ -2,8 +2,7 @@
 <browserconfig>
   <msapplication>
     <tile>
-      <square70x70logo src="/media/wills/wills-group-logo.png"/>
-      <square150x150logo src="/media/wills/wills-group-logo.png"/>
+      <square150x150logo src="/media/wills/optimized/branding/mstile-150.png"/>
       <TileColor>#140640</TileColor>
     </tile>
   </msapplication>

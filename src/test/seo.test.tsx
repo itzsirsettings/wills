@@ -64,9 +64,22 @@ describe('SEO Component', () => {
     );
     expect(getMetaContent('meta[property="og:site_name"]')).toBe('Wills Group of Company');
     expect(getMetaContent('meta[property="og:image"]')).toBe(
-      'https://wills-production-beec.up.railway.app/media/wills/optimized/full/IMG-20261003-WA0067.webp',
+      'https://wills-production-beec.up.railway.app/media/wills/optimized/branding/company-logo-share.jpg',
     );
     expect(getMetaContent('meta[name="twitter:card"]')).toBe('summary_large_image');
+    expect(getMetaContent('meta[name="twitter:image"]')).toBe(getMetaContent('meta[property="og:image"]'));
+    expect(getMetaContent('meta[property="og:image:width"]')).toBe('1200');
+    expect(getMetaContent('meta[property="og:image:height"]')).toBe('630');
+    expect(getMetaContent('meta[property="og:image:alt"]')).toBe('Wills Group of Company logo');
+  });
+
+  it('removes default image dimensions when a page explicitly overrides the social image', () => {
+    const { rerender } = render(<MemoryRouter><SEO /></MemoryRouter>);
+    rerender(<MemoryRouter><SEO ogImage="https://example.com/custom.png" ogImageAlt="Custom image" /></MemoryRouter>);
+    expect(getMetaContent('meta[property="og:image"]')).toBe('https://example.com/custom.png');
+    expect(document.querySelector('meta[property="og:image:width"]')).toBeNull();
+    expect(document.querySelector('meta[property="og:image:height"]')).toBeNull();
+    expect(document.querySelector('meta[property="og:image:type"]')).toBeNull();
   });
 
   it('marks private routes as noindex when requested', () => {

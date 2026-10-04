@@ -1,12 +1,12 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { siteConfig } from '../config';
-import { brand, mediaPath } from '../lib/brand';
+import { brand } from '../lib/brand';
 
 const SITE_ORIGIN = brand.siteUrl || window.location.origin;
 const SITE_NAME = brand.name;
-const DEFAULT_OG_IMAGE = `${SITE_ORIGIN}${mediaPath("0067")}`;
-const DEFAULT_OG_IMAGE_ALT = 'Wills Group of Company ornamental entrance gate';
+const DEFAULT_OG_IMAGE = `${SITE_ORIGIN}${brand.shareImage}`;
+const DEFAULT_OG_IMAGE_ALT = 'Wills Group of Company logo';
 
 interface SEOProps {
   title?: string;
@@ -74,6 +74,13 @@ const SEO = ({
     updateMetaTag('property', 'og:site_name', SITE_NAME);
     updateMetaTag('property', 'og:image', ogImage);
     updateMetaTag('property', 'og:image:alt', ogImageAlt);
+    if (ogImage === DEFAULT_OG_IMAGE) {
+      updateMetaTag('property', 'og:image:type', 'image/jpeg');
+      updateMetaTag('property', 'og:image:width', '1200');
+      updateMetaTag('property', 'og:image:height', '630');
+    } else {
+      for (const key of ['og:image:type', 'og:image:width', 'og:image:height']) removeMetaTag('property', key);
+    }
 
     updateMetaTag('name', 'twitter:card', 'summary_large_image');
     updateMetaTag('name', 'twitter:title', finalOgTitle);

@@ -13,6 +13,7 @@
     "build": "tsc -b && vite build",
     "build:cloudflare": "tsx scripts/run-cloudflare-build.ts",
     "media:optimize": "tsx scripts/optimize-site-media.ts",
+    "brand:assets": "tsx scripts/build-brand-assets.ts",
     "lint": "eslint .",
     "preview": "vite preview",
     "start": "node server-dist/index.js",
