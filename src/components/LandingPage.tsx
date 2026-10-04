@@ -88,9 +88,9 @@ export default function LandingPage() {
         <section className="division-brands" aria-label="Wills Group divisions">
           <div className="wills-container">
             <div className="division-logos">
-              <a href="#interiors" aria-label="Explore Wills Interior"><img src="/media/wills/logos/wills-interior.webp" alt="Wills Interior logo" width="640" height="640" loading="lazy" decoding="async" /></a>
-              <a href="#gallery" aria-label="Explore Wills Foreign Doors"><img src="/media/wills/logos/wills-foreign-doors.webp" alt="Wills Foreign Doors logo" width="640" height="640" loading="lazy" decoding="async" /></a>
-              <a href="#services" aria-label="Explore Wills Metal Works"><img src="/media/wills/logos/wills-metal-works.webp" alt="Wills Metal Works logo" width="640" height="640" loading="lazy" decoding="async" /></a>
+              <a href="#interiors" aria-label="Explore Wills Interior"><picture><source srcSet="/media/wills/optimized/logos/wills-interior.avif" type="image/avif" /><img src="/media/wills/optimized/logos/wills-interior.webp" alt="Wills Interior logo" width="512" height="512" loading="lazy" decoding="async" /></picture></a>
+              <a href="#gallery" aria-label="Explore Wills Foreign Doors"><picture><source srcSet="/media/wills/optimized/logos/wills-foreign-doors.avif" type="image/avif" /><img src="/media/wills/optimized/logos/wills-foreign-doors.webp" alt="Wills Foreign Doors logo" width="512" height="512" loading="lazy" decoding="async" /></picture></a>
+              <a href="#services" aria-label="Explore Wills Metal Works"><picture><source srcSet="/media/wills/optimized/logos/wills-metal-works.avif" type="image/avif" /><img src="/media/wills/optimized/logos/wills-metal-works.webp" alt="Wills Metal Works logo" width="512" height="512" loading="lazy" decoding="async" /></picture></a>
             </div>
             <p>Doors, interiors and metalwork. One Wills Group.</p>
           </div>
@@ -116,7 +116,7 @@ export default function LandingPage() {
         </section>
         <section id="interiors" className="interiors-section">
           <span id="beds" className="anchor-alias" />
-          <div className="interiors-image"><img src="/media/wills/interiors/living-room.webp" alt="Living room design concept with ivory seating and walnut wall panelling" loading="lazy" decoding="async" width="1440" height="810" /></div>
+          <div className="interiors-image"><picture><source type="image/avif" srcSet="/media/wills/optimized/interiors/living-room-640.avif 640w, /media/wills/optimized/interiors/living-room.avif 1280w" sizes="(max-width: 760px) 100vw, 50vw" /><img src="/media/wills/optimized/interiors/living-room.webp" alt="Living room design concept with ivory seating and walnut wall panelling" loading="lazy" decoding="async" width="1440" height="810" /></picture></div>
           <div className="interiors-copy"><h2>The space beyond<br /><em>the entrance.</em></h2><p>Interiors are a core part of Wills Group of Company. Bring your room plan, inspiration and the way you want the space to feel.</p><p>From living rooms and kitchens to fitted storage, explore a direction and discuss materials, layout and finishing details with us.</p><a className="wills-button button-primary" href="#contact">Discuss an interior project</a></div>
           <InteriorConcepts />
         </section>

@@ -12,6 +12,7 @@
     "dev:server": "tsx watch server/index.ts",
     "build": "tsc -b && vite build",
     "build:cloudflare": "tsx scripts/run-cloudflare-build.ts",
+    "media:optimize": "tsx scripts/optimize-site-media.ts",
     "lint": "eslint .",
     "preview": "vite preview",
     "start": "node server-dist/index.js",

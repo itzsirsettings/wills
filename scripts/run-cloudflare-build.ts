@@ -3,9 +3,9 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
-const videoOrigin = new URL(process.env.VITE_VIDEO_ORIGIN || 'https://wills-production-beec.up.railway.app');
-if (videoOrigin.protocol !== 'https:') throw new Error('Cloudflare video origin must use HTTPS.');
-process.env.VITE_VIDEO_ORIGIN = videoOrigin.origin;
+const videoOrigin = process.env.VITE_VIDEO_ORIGIN?.trim();
+if (videoOrigin && new URL(videoOrigin).protocol !== 'https:') throw new Error('Cloudflare video origin must use HTTPS.');
+process.env.VITE_VIDEO_ORIGIN = videoOrigin ? new URL(videoOrigin).origin : '';
 async function run(script: string, args: string[]) {
   await new Promise<void>((resolve, reject) => {
     const child = spawn(process.execPath, [path.join(root, script), ...args], { cwd: root, env: process.env, stdio: 'inherit' });

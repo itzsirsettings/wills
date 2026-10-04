@@ -45,4 +45,5 @@ export const projectImages: ProjectImage[] = [
 ];
 
 export const projectSrc = (project: ProjectImage, small = false) => mediaPath(project.number, small);
+export const galleryPreviewPath = (project: ProjectImage, width: number, format = 'webp') => `/media/wills/optimized/gallery/IMG-20261003-WA${project.number}-${width}.${format}`;
 export const suppliedVideos = ['0017', '0083', '0084', '0085', '0086', '0087', '0088', '0089', '0090', '0091', '0092', '0093'].map(videoPath);

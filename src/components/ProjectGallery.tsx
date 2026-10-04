@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Play } from 'lucide-react';
 import DesignLightbox from './DesignLightbox';
-import { projectImages, projectSrc, suppliedVideos } from '../lib/welding-media';
+import { galleryPreviewPath, projectImages, projectSrc, suppliedVideos } from '../lib/welding-media';
 import { mediaDimensions } from '../lib/media-dimensions';
 
 const mobileGalleryQuery = '(max-width: 760px), (max-width: 900px) and (pointer: coarse)';
@@ -43,7 +43,10 @@ export default function ProjectGallery() {
           {visible.map((project) => (
             <button type="button" className="project-tile" key={project.number} onClick={(event) => { returnFocusRef.current = event.currentTarget; setSelectedIndex(filtered.indexOf(project)); }} aria-label={`View ${project.title} ${project.category}`}>
               <div className="project-image">
-                <img src={projectSrc(project)} srcSet={`${projectSrc(project, true)} ${mediaDimensions[project.number].smallWidth}w, ${projectSrc(project)} ${mediaDimensions[project.number].width}w`} sizes="(max-width: 430px) 90vw, (max-width: 760px) 45vw, 30vw" alt={project.alt} loading="lazy" decoding="async" width={mediaDimensions[project.number].width} height={mediaDimensions[project.number].height} />
+                <picture>
+                  <source type="image/avif" srcSet={[360, 720, 1080].map(width => `${galleryPreviewPath(project, width, 'avif')} ${width}w`).join(', ')} sizes={mobileStack ? '(max-width: 760px) calc(100vw - 40px), calc(100vw - 64px)' : '(max-width: 1100px) 30vw, 430px'} />
+                  <img src={galleryPreviewPath(project, 720)} srcSet={[360, 720, 1080].map(width => `${galleryPreviewPath(project, width)} ${width}w`).join(', ')} sizes={mobileStack ? '(max-width: 760px) calc(100vw - 40px), calc(100vw - 64px)' : '(max-width: 1100px) 30vw, 430px'} alt={project.alt} loading="lazy" decoding="async" width="720" height="900" />
+                </picture>
 
               </div>
               <span className="project-caption"><strong>{project.title}</strong><span>{project.category}</span></span>
@@ -59,11 +62,11 @@ export default function ProjectGallery() {
           <div className="video-picker" aria-label="Choose a video">
             {suppliedVideos.map((src, index) => <button key={src} type="button" aria-pressed={activeVideo === index} onClick={() => setActiveVideo(index)}><Play size={14} aria-hidden="true" />Clip {String(index + 1).padStart(2, '0')}</button>)}
           </div>
-          {activeVideo !== null && <video key={activeVideo} className="project-video" src={suppliedVideos[activeVideo]} controls playsInline preload="metadata" aria-label={`Supplied metalwork video ${activeVideo + 1}`}>Your browser does not support video playback.</video>}
+          {activeVideo !== null && <video key={activeVideo} className="project-video" src={suppliedVideos[activeVideo]} poster={suppliedVideos[activeVideo].replace(/\.mp4$/, '.webp')} controls playsInline preload="metadata" aria-label={`Supplied metalwork video ${activeVideo + 1}`}>Your browser does not support video playback.</video>}
           {activeVideo !== null && <p className="video-note">Use the playback controls to pause, adjust volume or view the details full-screen.</p>}
         </div>
       </div>
-      <DesignLightbox returnFocusRef={returnFocusRef} images={filtered.map((project) => ({ src: projectSrc(project), title: project.title, alt: project.alt, ...mediaDimensions[project.number] }))} selectedIndex={selectedIndex} onSelectedIndexChange={setSelectedIndex} description="Design reference. Confirm materials, dimensions and finishes in your project quote." />
+      <DesignLightbox returnFocusRef={returnFocusRef} images={filtered.map((project) => ({ src: projectSrc(project), avif: projectSrc(project).replace(/\.webp$/, '.avif'), title: project.title, alt: project.alt, ...mediaDimensions[project.number] }))} selectedIndex={selectedIndex} onSelectedIndexChange={setSelectedIndex} description="Design reference. Confirm materials, dimensions and finishes in your project quote." />
     </section>
   );
 }

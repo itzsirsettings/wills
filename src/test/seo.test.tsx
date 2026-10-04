@@ -64,7 +64,7 @@ describe('SEO Component', () => {
     );
     expect(getMetaContent('meta[property="og:site_name"]')).toBe('Wills Group of Company');
     expect(getMetaContent('meta[property="og:image"]')).toBe(
-      'https://wills-production-beec.up.railway.app/media/wills/IMG-20261003-WA0067.webp',
+      'https://wills-production-beec.up.railway.app/media/wills/optimized/full/IMG-20261003-WA0067.webp',
     );
     expect(getMetaContent('meta[name="twitter:card"]')).toBe('summary_large_image');
   });

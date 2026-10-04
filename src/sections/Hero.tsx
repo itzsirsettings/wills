@@ -5,11 +5,11 @@ import { mediaPath } from '../lib/brand';
 
 const heroAssets = [
   { src: mediaPath('0067'), alt: 'Black entrance gate with gold decorative details', label: 'Metalwork and gates' },
-  { src: '/media/wills/interiors/living-room.webp', alt: 'Living room interior design concept', label: 'Living room concept' },
+  { src: '/media/wills/optimized/interiors/living-room.webp', alt: 'Living room interior design concept', label: 'Living room concept' },
   { src: mediaPath('0039'), alt: 'Black entrance door with a curved wood-tone panel and silver handle', label: 'Sculpted entrance door' },
-  { src: '/media/wills/interiors/kitchen.webp', alt: 'Fitted kitchen interior design concept', label: 'Fitted kitchen concept' },
+  { src: '/media/wills/optimized/interiors/kitchen.webp', alt: 'Fitted kitchen interior design concept', label: 'Fitted kitchen concept' },
   { src: mediaPath('0044'), alt: 'Pair of wood-tone entrance doors with black metal frames', label: 'Double entrance doors' },
-  { src: '/media/wills/interiors/bedroom.webp', alt: 'Bedroom interior design concept', label: 'Bedroom concept' },
+  { src: '/media/wills/optimized/interiors/bedroom.webp', alt: 'Bedroom interior design concept', label: 'Bedroom concept' },
   { src: mediaPath('0018'), alt: 'Polished gold-tone entrance door with decorative glazed lattice panel', label: 'Gold entrance door' },
 ];
 

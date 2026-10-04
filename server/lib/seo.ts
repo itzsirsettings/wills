@@ -3,7 +3,7 @@ const SITE_HOST = new URL(SITE_ORIGIN).hostname;
 const PUBLIC_ROBOTS =
   'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1';
 const PRIVATE_ROBOTS = 'noindex, nofollow';
-const DEFAULT_IMAGE = `${SITE_ORIGIN}/media/wills/IMG-20261003-WA0067.webp`;
+const DEFAULT_IMAGE = `${SITE_ORIGIN}/media/wills/optimized/full/IMG-20261003-WA0067.webp`;
 const DEFAULT_IMAGE_ALT = 'Wills Group of Company ornamental entrance gate';
 
 interface RouteSeo {
@@ -60,7 +60,7 @@ function jsonLdForRoute(seo: RouteSeo) {
   return {
     '@context': 'https://schema.org',
     '@graph': [
-      { '@type': 'Organization', '@id': `${SITE_ORIGIN}/#organization`, name: 'Wills Group of Company', url: `${SITE_ORIGIN}/`, logo: { '@type': 'ImageObject', url: `${SITE_ORIGIN}/media/wills/wills-group-logo.png` }, contactPoint: { '@type': 'ContactPoint', telephone: '+2347057450799', contactType: 'project enquiries' } },
+      { '@type': 'Organization', '@id': `${SITE_ORIGIN}/#organization`, name: 'Wills Group of Company', url: `${SITE_ORIGIN}/`, logo: { '@type': 'ImageObject', url: `${SITE_ORIGIN}/media/wills/optimized/wills-group-logo.png` }, contactPoint: { '@type': 'ContactPoint', telephone: '+2347057450799', contactType: 'project enquiries' } },
       { '@type': 'WebSite', '@id': `${SITE_ORIGIN}/#website`, name: 'Wills Group of Company', url: `${SITE_ORIGIN}/`, inLanguage: 'en' },
       { '@type': ['LocalBusiness', 'HomeAndConstructionBusiness'], '@id': `${SITE_ORIGIN}/#business`, name: 'Wills Group of Company', description: seo.description, url: `${SITE_ORIGIN}/` },
       { '@type': 'WebPage', '@id': `${canonicalUrl}#webpage`, name: seo.title, description: seo.description, url: canonicalUrl, isPartOf: { '@id': `${SITE_ORIGIN}/#website` }, primaryImageOfPage: { '@type': 'ImageObject', url: seo.image } },

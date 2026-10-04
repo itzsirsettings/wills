@@ -11,32 +11,32 @@ const SLIDES = [
   {
     id: "slide-1",
     title: "Decorative gates",
-    imageUrl: "/media/wills/IMG-20261003-WA0067.webp",
+    imageUrl: "/media/wills/optimized/full/IMG-20261003-WA0067.webp",
   },
   {
     id: "slide-2",
     title: "Statement doors",
-    imageUrl: "/media/wills/IMG-20261003-WA0018.webp",
+    imageUrl: "/media/wills/optimized/full/IMG-20261003-WA0018.webp",
   },
   {
     id: "slide-3",
     title: "Modern entrances",
-    imageUrl: "/media/wills/IMG-20261003-WA0039.webp",
+    imageUrl: "/media/wills/optimized/full/IMG-20261003-WA0039.webp",
   },
   {
     id: "slide-4",
     title: "Metal detailing",
-    imageUrl: "/media/wills/IMG-20261003-WA0023.webp",
+    imageUrl: "/media/wills/optimized/full/IMG-20261003-WA0023.webp",
   },
   {
     id: "slide-5",
     title: "Custom fabrication",
-    imageUrl: "/media/wills/IMG-20261003-WA0054.webp",
+    imageUrl: "/media/wills/optimized/full/IMG-20261003-WA0054.webp",
   },
   {
     id: "slide-6",
     title: "Interiors",
-    imageUrl: "/media/wills/IMG-20261003-WA0036.webp",
+    imageUrl: "/media/wills/optimized/full/IMG-20261003-WA0036.webp",
   },
 ]
 
@@ -57,7 +57,7 @@ export function HoverSliderDemo() {
         <HoverSliderImageWrap>
           {SLIDES.map((slide, index) => (
             <div key={slide.id}>
-              <HoverSliderImage
+              <picture className="block size-full"><source type="image/avif" srcSet={slide.imageUrl.replace(/\.webp$/, '.avif')} /><HoverSliderImage
                 index={index}
                 imageUrl={slide.imageUrl}
                 src={slide.imageUrl}
@@ -65,7 +65,7 @@ export function HoverSliderDemo() {
                 className="size-full max-h-96 w-full object-cover"
                 loading="lazy"
                 decoding="async"
-              />
+              /></picture>
             </div>
           ))}
         </HoverSliderImageWrap>

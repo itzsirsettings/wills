@@ -1,8 +1,9 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, statSync } from 'node:fs';
+import sharp from 'sharp';
 import path from 'node:path';
-import { projectImages, projectSrc, suppliedVideos } from '../lib/welding-media';
+import { galleryPreviewPath, projectImages, projectSrc, suppliedVideos } from '../lib/welding-media';
 import { mediaDimensions } from '../lib/media-dimensions';
 describe('supplied welding and interiors media', () => {
   it('references actual files for every gallery image and every video', () => {
@@ -20,10 +21,42 @@ describe('supplied welding and interiors media', () => {
     }
     expect(projectImages.some((project) => project.category === 'Interiors')).toBe(true);
   });
+  it('keeps all 33 gallery previews uniform and within the mobile transfer budget', async () => {
+    for (const project of projectImages) {
+      for (const width of [360, 720, 1080]) {
+        const filename = path.join('public', galleryPreviewPath(project, width, 'avif'));
+        const dimensions = await sharp(filename).metadata();
+        expect([dimensions.width, dimensions.height]).toEqual([width, width * 5 / 4]);
+        expect(existsSync(path.join('public', galleryPreviewPath(project, width)))).toBe(true);
+        if (width === 720) expect(statSync(filename).size).toBeLessThan(64 * 1024);
+      }
+    }
+  });
+  it('puts video metadata before the media payload and keeps every encode smaller than its original', () => {
+    for (const video of suppliedVideos) {
+      const filename = path.join('public', video);
+      const bytes = readFileSync(filename);
+      const atoms = [];
+      for (let offset = 0; offset < bytes.length;) {
+        let size = bytes.readUInt32BE(offset);
+        const type = bytes.toString('ascii', offset + 4, offset + 8);
+        if (size === 1) size = Number(bytes.readBigUInt64BE(offset + 8));
+        if (size === 0) size = bytes.length - offset;
+        expect(size).toBeGreaterThanOrEqual(8);
+        atoms.push(type);
+        offset += size;
+      }
+      expect(atoms).toContain('moov');
+      expect(atoms).toContain('mdat');
+      expect(atoms.indexOf('moov')).toBeLessThan(atoms.indexOf('mdat'));
+      expect(bytes.length).toBeLessThan(statSync(filename.replace(`${path.sep}optimized`, '')).size);
+      expect(existsSync(filename.replace('.mp4', '.webp'))).toBe(true);
+    }
+  });
   it('uses the new brand manifest and retains the original media', () => {
     const manifest = JSON.parse(readFileSync('public/manifest.json', 'utf8'));
     expect(manifest.name).toBe('Wills Group of Company');
-    expect(manifest.icons[0].src).toBe('/media/wills/wills-group-logo.png');
+    expect(manifest.icons[0].src).toBe('/media/wills/optimized/wills-group-logo.png');
     expect(existsSync('public/images/thewworks-logo.png')).toBe(true);
     expect(existsSync('public/Surreal.mp4')).toBe(true);
   });

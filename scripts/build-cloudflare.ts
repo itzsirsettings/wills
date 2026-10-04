@@ -13,10 +13,13 @@ await rm(output, { recursive: true, force: true });
 await mkdir(output, { recursive: true });
 await cp(path.resolve(root, 'dist'), output, { recursive: true });
 const videoOrigin = process.env.VITE_VIDEO_ORIGIN ? new URL(process.env.VITE_VIDEO_ORIGIN).origin : '';
+const mediaDirectory = path.join(output, 'media', 'wills');
+for (const file of await readdir(mediaDirectory)) {
+  if (/^VID-20261003-WA\d{4}\.mp4$/.test(file)) await rm(path.join(mediaDirectory, file));
+}
 if (videoOrigin) {
-  const mediaDirectory = path.join(output, 'media', 'wills');
-  for (const file of await readdir(mediaDirectory)) {
-    if (/^VID-20261003-WA\d{4}\.mp4$/.test(file)) await rm(path.join(mediaDirectory, file));
+  for (const file of await readdir(path.join(mediaDirectory, 'optimized'))) {
+    if (/^VID-20261003-WA\d{4}\.mp4$/.test(file)) await rm(path.join(mediaDirectory, 'optimized', file));
   }
 }
 const shell = await readFile(path.join(root, 'dist', 'index.html'), 'utf8');

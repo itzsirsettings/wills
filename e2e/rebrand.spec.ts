@@ -1,5 +1,36 @@
 import { test, expect } from '@playwright/test';
 
+test('gallery previews stay uniform and videos load only after selection', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.addInitScript(() => localStorage.setItem('wills-group:cookie-consent', 'accepted'));
+  const videoRequests: string[] = [];
+  page.on('request', request => { if (/\.mp4(?:\?|$)/.test(request.url())) videoRequests.push(request.url()); });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/');
+  await page.locator('.project-tile').first().scrollIntoViewIfNeeded();
+  await expect.poll(() => page.locator('.project-tile img').first().evaluate(image => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+  expect(await page.locator('.project-tile img').first().evaluate(image => (image as HTMLImageElement).currentSrc)).toMatch(/optimized\/gallery\/.*-(360|720|1080)\.avif$/);
+  for (const width of [320, 390, 768, 1440]) {
+    await page.setViewportSize({ width, height: 844 });
+    const frames = await page.locator('.project-image').evaluateAll(images => images.map(image => {
+      const bounds = image.getBoundingClientRect(); return { width: bounds.width, height: bounds.height };
+    }));
+    for (const frame of frames) {
+      expect(frame.width).toBeCloseTo(frames[0].width, 0);
+      expect(frame.height).toBeCloseTo(frames[0].height, 0);
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(width);
+  }
+  expect(videoRequests).toHaveLength(0);
+  await page.getByRole('button', { name: 'Clip 01', exact: true }).click();
+  await expect(page.locator('.project-video')).toHaveAttribute('poster', /optimized\/VID-.*\.webp$/);
+  await expect.poll(() => page.locator('.project-video').evaluate(video => (video as HTMLVideoElement).readyState), { timeout: 15000 }).toBeGreaterThanOrEqual(1);
+  await page.locator('.project-video').evaluate(video => (video as HTMLVideoElement).play());
+  await expect.poll(() => page.locator('.project-video').evaluate(video => (video as HTMLVideoElement).currentTime), { timeout: 15000 }).toBeGreaterThan(0.5);
+  await page.locator('.project-video').evaluate(video => (video as HTMLVideoElement).pause());
+  expect(videoRequests.some(url => /optimized\/VID-.*\.mp4$/.test(url))).toBe(true);
+});
+
 test('hero actions and ten-second slideshow work on mobile', async ({ page }) => {
   await page.clock.install({ time: new Date('2026-10-04T12:00:00Z') });
   await page.setViewportSize({ width: 390, height: 844 });

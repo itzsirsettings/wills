@@ -80,6 +80,7 @@
   .wills-site .project-grid .project-tile { position: sticky; top: calc(var(--wills-header-height) + 12px); background: var(--wills-paper); padding-bottom: 16px; }
   .wills-site .project-grid .project-tile:focus-visible { z-index: 2; }
   .project-image { max-height: calc(100svh - var(--wills-header-height) - 140px); }
+  .project-image img { object-fit: contain; }
 }
 @media print {
   .wills-site .project-grid .project-tile { position: static; }

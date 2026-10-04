@@ -1,7 +1,7 @@
 import { useRef, type RefObject } from 'react';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from './ui/dialog';
 
-export interface DesignImage { src: string; title: string; alt: string; width: number; height: number }
+export interface DesignImage { src: string; avif?: string; title: string; alt: string; width: number; height: number }
 interface Props { images: DesignImage[]; selectedIndex: number | null; onSelectedIndexChange: (index: number | null) => void; description: string; returnFocusRef: RefObject<HTMLButtonElement | null> }
 
 export default function DesignLightbox({ images, selectedIndex, onSelectedIndexChange, description, returnFocusRef }: Props) {
@@ -30,7 +30,7 @@ export default function DesignLightbox({ images, selectedIndex, onSelectedIndexC
         touchStart.current = null;
         if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.4) move(dx < 0 ? 1 : -1);
       }}>
-        <img src={selected.src} alt={selected.alt} width={selected.width} height={selected.height} className="lightbox-image" />
+        <picture>{selected.avif && <source type="image/avif" srcSet={selected.avif} />}<img src={selected.src} alt={selected.alt} width={selected.width} height={selected.height} className="lightbox-image" decoding="async" /></picture>
       </div>}
       <div className="lightbox-controls">
         <button type="button" onClick={() => move(-1)} disabled={images.length < 2} aria-label="Previous design">Previous</button>
