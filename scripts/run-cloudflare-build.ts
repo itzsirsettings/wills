@@ -3,7 +3,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
-const videoOrigin = process.env.VITE_VIDEO_ORIGIN?.trim();
+// Pages serves whole files for Range requests; use the verified range-capable media origin.
+const videoOrigin = process.env.VITE_VIDEO_ORIGIN?.trim() || 'https://wills-production-beec.up.railway.app';
 if (videoOrigin && new URL(videoOrigin).protocol !== 'https:') throw new Error('Cloudflare video origin must use HTTPS.');
 process.env.VITE_VIDEO_ORIGIN = videoOrigin ? new URL(videoOrigin).origin : '';
 async function run(script: string, args: string[]) {
