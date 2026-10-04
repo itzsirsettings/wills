@@ -23,7 +23,7 @@ test('gallery previews stay uniform and videos load only after selection', async
   }
   expect(videoRequests).toHaveLength(0);
   await page.getByRole('button', { name: 'Clip 01', exact: true }).click();
-  await expect(page.locator('.project-video')).toHaveAttribute('poster', /optimized\/VID-.*\.webp$/);
+  await expect(page.locator('.project-video')).toHaveAttribute('poster', /^\/media\/wills\/optimized\/VID-.*\.webp$/);
   await expect.poll(() => page.locator('.project-video').evaluate(video => (video as HTMLVideoElement).readyState), { timeout: 15000 }).toBeGreaterThanOrEqual(1);
   await page.locator('.project-video').evaluate(video => (video as HTMLVideoElement).play());
   await expect.poll(() => page.locator('.project-video').evaluate(video => (video as HTMLVideoElement).currentTime), { timeout: 15000 }).toBeGreaterThan(0.5);

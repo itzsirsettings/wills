@@ -62,7 +62,7 @@ export default function ProjectGallery() {
           <div className="video-picker" aria-label="Choose a video">
             {suppliedVideos.map((src, index) => <button key={src} type="button" aria-pressed={activeVideo === index} onClick={() => setActiveVideo(index)}><Play size={14} aria-hidden="true" />Clip {String(index + 1).padStart(2, '0')}</button>)}
           </div>
-          {activeVideo !== null && <video key={activeVideo} className="project-video" src={suppliedVideos[activeVideo]} poster={suppliedVideos[activeVideo].replace(/\.mp4$/, '.webp')} controls playsInline preload="metadata" aria-label={`Supplied metalwork video ${activeVideo + 1}`}>Your browser does not support video playback.</video>}
+          {activeVideo !== null && <video key={activeVideo} className="project-video" src={suppliedVideos[activeVideo]} poster={suppliedVideos[activeVideo].replace(/^https?:\/\/[^/]+/, '').replace(/\.mp4$/, '.webp')} controls playsInline preload="metadata" aria-label={`Supplied metalwork video ${activeVideo + 1}`}>Your browser does not support video playback.</video>}
           {activeVideo !== null && <p className="video-note">Use the playback controls to pause, adjust volume or view the details full-screen.</p>}
         </div>
       </div>
