@@ -1,0 +1,191 @@
+@import './wills-fonts.css';
+@import './brand-palette.css';
+@import './brand-pattern.css';
+
+@import "tailwindcss";
+@config "../tailwind.config.js";
+
+@layer base {
+  :root {
+    --font-display: 'Bricolage Grotesque', sans-serif;
+    --font-body: 'Bricolage Grotesque', sans-serif;
+    --ease-card-lift: cubic-bezier(0.22, 1, 0.36, 1);
+
+    /* Typography */
+    --font-corporate: 'Libre Franklin', 'Bricolage Grotesque', sans-serif;
+    --font-heading: 'Bricolage Grotesque', sans-serif;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply text-foreground;
+    min-height: 100vh;
+    background-color: var(--market-sand);
+    color: var(--market-ink);
+    font-family: var(--font-body);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -0.05em;
+  }
+
+  a,
+  button,
+  input,
+  textarea {
+    transition-property: color, background-color, border-color, opacity, transform, box-shadow;
+    transition-duration: 220ms;
+    transition-timing-function: ease;
+  }
+
+  ::selection {
+    background: rgba(151, 11, 22, 0.18);
+    color: inherit;
+  }
+
+  input[placeholder]::placeholder,
+  textarea[placeholder]::placeholder {
+    color: var(--placeholder-idle);
+    opacity: 1;
+  }
+
+  /* Corporate/General Styles */
+}
+
+@layer utilities {
+  /* Ken Burns Effect for Hero */
+  @keyframes ken-burns {
+    0% {
+      transform: scale(1) translate(0, 0);
+    }
+    100% {
+      transform: scale(1.08) translate(-1%, -1%);
+    }
+  }
+
+  .animate-ken-burns {
+    animation: ken-burns 12s ease-out forwards;
+  }
+
+  @keyframes placeholderPulse {
+    0%,
+    100% {
+      color: var(--placeholder-idle);
+      opacity: 0.62;
+      letter-spacing: 0.02em;
+    }
+
+    50% {
+      color: var(--placeholder-accent);
+      opacity: 1;
+      letter-spacing: 0.08em;
+    }
+  }
+
+  .market-panel {
+    background: rgba(255, 255, 255, 0.84);
+    border: 1px solid rgba(220, 217, 229, 0.9);
+    box-shadow: var(--market-shadow);
+    backdrop-filter: blur(18px);
+  }
+
+  .live-card,
+  [data-slot='card'] {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+  }
+
+  .live-card > *,
+  [data-slot='card'] > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .market-grid {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .market-grid::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: rgba(255, 255, 255, 0.04);
+    opacity: 0.4;
+    pointer-events: none;
+  }
+
+  .admin-thewworksict {
+    background-color: var(--admin-shell);
+    color: var(--admin-ink);
+  }
+
+  .admin-panel {
+    background: var(--admin-surface);
+    border: 1px solid rgba(220, 217, 229, 0.88);
+    box-shadow: var(--admin-shadow);
+    backdrop-filter: blur(18px);
+  }
+
+  .admin-hero {
+    background-color: var(--admin-burgundy);
+  }
+
+  .admin-grid {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .admin-grid::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: rgba(255, 255, 255, 0.03);
+    opacity: 0.24;
+    pointer-events: none;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .live-card,
+    .live-card::after,
+    [data-slot='card'],
+    [data-slot='card']::after {
+      transition-duration: 0.01ms !important;
+      will-change: auto;
+    }
+
+    .live-card:hover,
+    .live-card:focus-within,
+    [data-slot='card']:hover,
+    [data-slot='card']:focus-within {
+      transform: none;
+    }
+  }
+}

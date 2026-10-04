@@ -1,0 +1,23 @@
+[
+  {
+    "text": "Checkout captures delivery details,\nshows a clear order summary, starts",
+    "startMs": 0,
+    "endMs": 4868,
+    "timestampMs": 0,
+    "confidence": null
+  },
+  {
+    "text": "secure Paystack payment, and\nverifies every transaction before",
+    "startMs": 4868,
+    "endMs": 8763,
+    "timestampMs": 4868,
+    "confidence": null
+  },
+  {
+    "text": "confirmation and\ncustomer notifications.",
+    "startMs": 8763,
+    "endMs": 10710,
+    "timestampMs": 8763,
+    "confidence": null
+  }
+]

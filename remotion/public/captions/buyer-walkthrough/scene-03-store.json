@@ -1,0 +1,23 @@
+[
+  {
+    "text": "The store gives buyers a faster\npath to purchase with search,",
+    "startMs": 0,
+    "endMs": 4635,
+    "timestampMs": 0,
+    "confidence": null
+  },
+  {
+    "text": "categories, product previews, cart\ncontrols, and a browsing experience",
+    "startMs": 4635,
+    "endMs": 8427,
+    "timestampMs": 4635,
+    "confidence": null
+  },
+  {
+    "text": "designed for conversion.",
+    "startMs": 8427,
+    "endMs": 9691,
+    "timestampMs": 8427,
+    "confidence": null
+  }
+]

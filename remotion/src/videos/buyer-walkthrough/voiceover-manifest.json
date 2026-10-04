@@ -1,0 +1,18 @@
+{
+  "sceneDurationsInFrames": [
+    327,
+    309,
+    309,
+    340,
+    309,
+    295
+  ],
+  "sceneAudioFiles": {
+    "scene-01-platform": "voiceover/buyer-walkthrough/scene-01-platform.mp3",
+    "scene-02-landing": "voiceover/buyer-walkthrough/scene-02-landing.mp3",
+    "scene-03-store": "voiceover/buyer-walkthrough/scene-03-store.mp3",
+    "scene-04-checkout": "voiceover/buyer-walkthrough/scene-04-checkout.mp3",
+    "scene-05-analytics": "voiceover/buyer-walkthrough/scene-05-analytics.mp3",
+    "scene-06-admin-ops": "voiceover/buyer-walkthrough/scene-06-admin-ops.mp3"
+  }
+}

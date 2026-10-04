@@ -1,0 +1,6 @@
+title = "Wills secret scanning"
+[extend]
+useDefault = true
+[[allowlists]]
+description = "Generated dependencies, build outputs and local baseline copies; source and Git history remain scanned"
+paths = ['''(^|[/\\])(node_modules|dist|server-dist|work|test-results|playwright-report)([/\\]|$)''']

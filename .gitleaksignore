@@ -1,0 +1,5 @@
+# Reviewed synthetic test-only values. No general test-directory exclusion.
+1f4536f1033e68d2dd4087fa3cce80729fcec732:server/test/index.test.ts:generic-api-key:13
+1f4536f1033e68d2dd4087fa3cce80729fcec732:server/test/index.test.ts:generic-api-key:15
+1f4536f1033e68d2dd4087fa3cce80729fcec732:server/test/security.test.ts:generic-api-key:7
+1f4536f1033e68d2dd4087fa3cce80729fcec732:server/test/security.test.ts:generic-api-key:9

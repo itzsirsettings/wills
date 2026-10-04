@@ -1,0 +1,80 @@
+[
+  {
+    "id": "scene-01-platform",
+    "headline": "One polished system for brand, commerce, and operations.",
+    "subcopy": "A buyer sees a premium public website, a focused store, and a protected admin workspace working together in one platform.",
+    "voiceoverText": "This is not just a website. It is a premium commerce platform that combines brand presentation, shopping, secure checkout, and business operations in one polished system.",
+    "keyProofPoints": [
+      "Public brand website",
+      "Dedicated transactional store",
+      "Protected admin control"
+    ],
+    "visualVariant": "platform-overview",
+    "fallbackDurationInFrames": 240
+  },
+  {
+    "id": "scene-02-landing",
+    "headline": "The landing site builds trust before a buyer ever reaches the store.",
+    "subcopy": "Storytelling sections, curated showcases, FAQs, and direct contact prompts help turn interest into confidence.",
+    "voiceoverText": "The landing site introduces the brand, showcases the collection, answers common questions, and opens direct contact channels that turn interest into trust.",
+    "keyProofPoints": [
+      "Story-led sections",
+      "FAQ and contact flow",
+      "WhatsApp lead capture"
+    ],
+    "visualVariant": "landing-site",
+    "fallbackDurationInFrames": 240
+  },
+  {
+    "id": "scene-03-store",
+    "headline": "The store gives buyers a faster path from browsing to buying.",
+    "subcopy": "Search, category rails, product previews, and cart controls are designed to keep decision-making clear and friction low.",
+    "voiceoverText": "The store gives buyers a faster path to purchase with search, categories, product previews, cart controls, and a browsing experience designed for conversion.",
+    "keyProofPoints": [
+      "Search and categories",
+      "Preview-first product discovery",
+      "Conversion-oriented cart flow"
+    ],
+    "visualVariant": "storefront",
+    "fallbackDurationInFrames": 270
+  },
+  {
+    "id": "scene-04-checkout",
+    "headline": "Checkout is secure, clear, and verified server-side.",
+    "subcopy": "Customers see a full order summary while the backend validates order data, starts payment, and confirms every successful transaction.",
+    "voiceoverText": "Checkout captures delivery details, shows a clear order summary, starts secure Paystack payment, and verifies every transaction before confirmation and customer notifications.",
+    "keyProofPoints": [
+      "Delivery detail capture",
+      "Paystack payment handoff",
+      "Verified confirmation state"
+    ],
+    "visualVariant": "checkout",
+    "fallbackDurationInFrames": 300
+  },
+  {
+    "id": "scene-05-analytics",
+    "headline": "The admin dashboard turns activity into business visibility.",
+    "subcopy": "Owners can follow revenue, orders, demand patterns, and conversion performance in one protected analytics view.",
+    "voiceoverText": "The protected admin dashboard gives the owner live visibility into revenue, orders, conversion rate, demand trends, and overall store performance.",
+    "keyProofPoints": [
+      "Revenue and order tracking",
+      "Demand trend visibility",
+      "Protected Google-only access"
+    ],
+    "visualVariant": "analytics",
+    "fallbackDurationInFrames": 300
+  },
+  {
+    "id": "scene-06-admin-ops",
+    "headline": "Catalog updates stay inside the platform instead of becoming developer bottlenecks.",
+    "subcopy": "Products can be added, edited, repriced, and refreshed from the same protected admin environment.",
+    "voiceoverText": "Product management is built in, so catalog updates happen quickly without developer bottlenecks. It is one platform for brand, commerce, and operations.",
+    "keyProofPoints": [
+      "Add and edit products",
+      "Image and pricing updates",
+      "Strong closing sales message"
+    ],
+    "visualVariant": "product-management",
+    "fallbackDurationInFrames": 270
+  }
+]

@@ -1,0 +1,30 @@
+[
+  {
+    "text": "This is not just a website.",
+    "startMs": 0,
+    "endMs": 2375,
+    "timestampMs": 0,
+    "confidence": null
+  },
+  {
+    "text": "It is a premium commerce platform\nthat combines brand presentation,",
+    "startMs": 2375,
+    "endMs": 6333,
+    "timestampMs": 2375,
+    "confidence": null
+  },
+  {
+    "text": "shopping, secure checkout, and\nbusiness operations in one polished",
+    "startMs": 6333,
+    "endMs": 9896,
+    "timestampMs": 6333,
+    "confidence": null
+  },
+  {
+    "text": "system.",
+    "startMs": 9896,
+    "endMs": 10292,
+    "timestampMs": 9896,
+    "confidence": null
+  }
+]

@@ -1,0 +1,6 @@
+# security.txt
+Contact: mailto:security@stankings.com
+Expires: 2027-01-01T00:00:00.000Z
+Preferred-Languages: en
+Policy: https://stankings.com/security-policy
+Hiring: https://stankings.com/careers

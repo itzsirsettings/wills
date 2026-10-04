@@ -1,0 +1,42 @@
+/* Four dot scales share one static texture; opacity keeps it subordinate to content. */
+:root {
+  --brand-dot-ink: var(--brand-navy);
+  --brand-dot-opacity: .055;
+}
+
+.wills-site :is(section, article, .offerings-strip, footer, .project-tile, .interior-concept-grid figure, .wills-contact-card, .project-brief),
+.brand-dot-surface,
+[data-slot='card'] {
+  position: relative;
+  isolation: isolate;
+}
+
+.wills-site :is(.interiors-section, .process-section, .contact-section),
+.wills-slideshow {
+  --brand-dot-ink: var(--brand-lavender);
+  --brand-dot-opacity: .075;
+}
+
+.wills-site :is(section:not(.wills-hero), article, .offerings-strip, footer, .project-tile, .interior-concept-grid figure, .wills-contact-card, .project-brief)::before,
+.brand-dot-surface::before,
+[data-slot='card']::before,
+.project-dialog::before,
+.wills-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: inherit;
+  opacity: var(--brand-dot-opacity);
+  background-image:
+    radial-gradient(circle, var(--brand-dot-ink) 3px, transparent 3.5px),
+    radial-gradient(circle, var(--brand-dot-ink) 2px, transparent 2.5px),
+    radial-gradient(circle, var(--brand-dot-ink) 1px, transparent 1.5px),
+    radial-gradient(circle, var(--brand-dot-ink) .5px, transparent 1px);
+  background-size: 144px 144px, 96px 96px, 48px 48px, 24px 24px;
+  background-position: 18px 20px, 56px 44px, 12px 28px, 4px 8px;
+}
+
+.project-dialog { isolation: isolate; }
+.wills-hero { --brand-dot-ink: var(--brand-lavender); --brand-dot-opacity: .09; }

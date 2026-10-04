@@ -1,0 +1,23 @@
+[
+  {
+    "text": "The landing site introduces the brand,\nshowcases the collection, answers",
+    "startMs": 0,
+    "endMs": 4405,
+    "timestampMs": 0,
+    "confidence": null
+  },
+  {
+    "text": "common questions, and opens direct\ncontact channels that turn interest",
+    "startMs": 4405,
+    "endMs": 8810,
+    "timestampMs": 4405,
+    "confidence": null
+  },
+  {
+    "text": "into trust.",
+    "startMs": 8810,
+    "endMs": 9691,
+    "timestampMs": 8810,
+    "confidence": null
+  }
+]

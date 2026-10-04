@@ -1,0 +1,23 @@
+[
+  {
+    "text": "The protected admin dashboard gives\nthe owner live visibility into",
+    "startMs": 0,
+    "endMs": 4846,
+    "timestampMs": 0,
+    "confidence": null
+  },
+  {
+    "text": "revenue, orders, conversion rate,\ndemand trends, and overall store",
+    "startMs": 4846,
+    "endMs": 9207,
+    "timestampMs": 4846,
+    "confidence": null
+  },
+  {
+    "text": "performance.",
+    "startMs": 9207,
+    "endMs": 9691,
+    "timestampMs": 9207,
+    "confidence": null
+  }
+]

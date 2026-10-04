@@ -1,0 +1,17 @@
+{
+  "name": "Wills Group of Company",
+  "short_name": "Wills Group",
+  "description": "Doors, gates, metalwork and interiors",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f7f7fa",
+  "theme_color": "#140640",
+  "icons": [
+    {
+      "src": "/media/wills/wills-group-logo.png",
+      "sizes": "1254x1254",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

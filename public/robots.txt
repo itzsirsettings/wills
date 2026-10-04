@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: /
+
+# Preview default. Set the confirmed domain and release SEO configuration before indexing.

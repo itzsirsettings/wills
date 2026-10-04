@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<browserconfig>
+  <msapplication>
+    <tile>
+      <square70x70logo src="/media/wills/wills-group-logo.png"/>
+      <square150x150logo src="/media/wills/wills-group-logo.png"/>
+      <TileColor>#140640</TileColor>
+    </tile>
+  </msapplication>
+</browserconfig>

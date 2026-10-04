@@ -1,0 +1,23 @@
+[
+  {
+    "text": "Product management is built in,\nso catalog updates happen quickly",
+    "startMs": 0,
+    "endMs": 4191,
+    "timestampMs": 0,
+    "confidence": null
+  },
+  {
+    "text": "without developer bottlenecks.",
+    "startMs": 4191,
+    "endMs": 5448,
+    "timestampMs": 4191,
+    "confidence": null
+  },
+  {
+    "text": "It is one platform for brand,\ncommerce, and operations.",
+    "startMs": 5448,
+    "endMs": 9221,
+    "timestampMs": 5448,
+    "confidence": null
+  }
+]
