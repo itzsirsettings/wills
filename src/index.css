@@ -7,13 +7,13 @@
 
 @layer base {
   :root {
-    --font-display: 'Bricolage Grotesque', sans-serif;
-    --font-body: 'Bricolage Grotesque', sans-serif;
+    --font-display: 'Orbitron', sans-serif;
+    --font-body: 'Ubuntu', sans-serif;
     --ease-card-lift: cubic-bezier(0.22, 1, 0.36, 1);
 
     /* Typography */
-    --font-corporate: 'Libre Franklin', 'Bricolage Grotesque', sans-serif;
-    --font-heading: 'Bricolage Grotesque', sans-serif;
+    --font-corporate: 'Ubuntu', sans-serif;
+    --font-heading: 'Ubuntu', sans-serif;
   }
 
   * {
@@ -30,19 +30,13 @@
     background-color: var(--market-sand);
     color: var(--market-ink);
     font-family: var(--font-body);
+    font-weight: 300;
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    font-family: var(--font-display);
-    font-weight: 700;
+  h1, h2, h3, h4, h5, h6 {
     letter-spacing: -0.05em;
   }
 
@@ -67,6 +61,16 @@
   }
 
   /* Corporate/General Styles */
+}
+
+/* Keep the requested text roles consistent across existing utility classes. */
+h1, h2, h3, h4, h5, h6, .font-heading {
+  font-family: var(--font-heading);
+  font-weight: 500;
+}
+
+p {
+  font-weight: 300;
 }
 
 @layer utilities {

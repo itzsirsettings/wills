@@ -5,7 +5,7 @@
   --wills-logo-size: 66.7px;
 }
 html { scroll-padding-top: calc(var(--wills-header-height) + 16px); }
-.wills-site { color: var(--wills-charcoal); background: var(--wills-paper); font-family: 'Bricolage Grotesque', sans-serif; }
+.wills-site { color: var(--wills-charcoal); background: var(--wills-paper); font-family: var(--font-body); }
 .wills-container { width: min(1360px, calc(100% - 112px)); margin-inline: auto; }
 .wills-section { padding-block: var(--wills-space); position: relative; }
 .footer-policy-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 16px; max-width: 720px; }
@@ -13,7 +13,7 @@ html { scroll-padding-top: calc(var(--wills-header-height) + 16px); }
 .policy-back { grid-column: 1; font-size: 14px; min-height: 44px; display: inline-flex; align-items: center; }
 .policy-main { padding-block: clamp(48px, 7vw, 100px); }
 .policy-intro { max-width: 840px; padding-bottom: 48px; border-bottom: 1px solid var(--brand-line); }
-.policy-intro h1 { font-size: clamp(2rem, 5vw, 4rem); font-weight: 600; letter-spacing: -.055em; line-height: 1.08; margin-block: 18px 24px; }
+.policy-intro h1 { font-size: clamp(2rem, 5vw, 4rem); font-weight: 500; letter-spacing: -.055em; line-height: 1.08; margin-block: 18px 24px; }
 .policy-intro h1:focus { outline: none; }
 .policy-intro > p { color: var(--wills-muted); max-width: 680px; }
 .policy-intro .policy-date { margin-top: 20px; font-size: 13px; }
@@ -36,7 +36,7 @@ html { scroll-padding-top: calc(var(--wills-header-height) + 16px); }
   .policy-back { font-size: 12px; }
   .policy-site .header-quote { padding: 10px; font-size: 12px; }
 }
-.wills-site h2 { font-size: clamp(1.68rem, 3.36vw, 3.36rem); font-weight: 600; letter-spacing: -.055em; line-height: 1.06; }
+.wills-site h2 { font-size: clamp(1.68rem, 3.36vw, 3.36rem); font-weight: 500; letter-spacing: -.055em; line-height: 1.06; }
 .wills-site h2 em, .wills-site h1 em { font-style: normal; color: var(--wills-accent-light); }
 .wills-site p { line-height: 1.8; }
 .wills-site a, .wills-site button { transition: color .2s, background .2s, border-color .2s, transform .2s; }
@@ -71,7 +71,7 @@ html { scroll-padding-top: calc(var(--wills-header-height) + 16px); }
 @keyframes hero-image-arrive { from { opacity: 0; } to { opacity: 1; } }
 .hero-shade { background: radial-gradient(ellipse at center, rgb(16 5 47 / 81%) 0%, rgb(16 5 47 / 60%) 75%), linear-gradient(0deg,rgb(16 5 47 / 50%),transparent 50%); }
 .hero-content { height: 100%; padding-block: 130px 110px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-.wills-hero h1 { font-size: clamp(2.24rem, 3.92vw, 4.2rem); max-width: 920px; font-weight: 600; letter-spacing: -.06em; line-height: 1.04; }
+.wills-hero h1 { font-family: var(--font-display); font-size: clamp(2.24rem, 3.92vw, 4.2rem); max-width: 920px; font-weight: 500; letter-spacing: -.06em; line-height: 1.04; }
 .wills-hero h1 em { display: inline-block; }
 .hero-content p { margin-top: 28px; color: var(--brand-lavender); font-size: clamp(1.05rem, 1.4vw, 1.3rem); max-width: 580px; }
 .hero-actions { display: flex; align-items: center; justify-content: center; gap: 34px; margin-top: 40px; flex-wrap: wrap; }

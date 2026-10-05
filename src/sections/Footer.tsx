@@ -187,7 +187,7 @@ const Footer = () => {
 
         {/* Wordmark */}
         <div className="footer-wordmark-crop">
-          <p className="footer-wordmark font-heading tracking-tighter text-[var(--chevron-subtle)]">
+          <p className="footer-wordmark font-display tracking-tighter text-[var(--chevron-subtle)]">
             {footerWordmark}
           </p>
         </div>

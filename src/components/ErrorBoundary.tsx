@@ -40,7 +40,8 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
             justifyContent: 'center',
             minHeight: '100vh',
             padding: '2rem',
-            fontFamily: "'IBM Plex Sans', sans-serif",
+            fontFamily: 'var(--font-body)',
+            fontWeight: 300,
             backgroundColor: 'var(--brand-paper)',
             color: 'var(--brand-ink)',
             textAlign: 'center',
@@ -48,9 +49,9 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
         >
           <h1
             style={{
-              fontFamily: "'Bricolage Grotesque', sans-serif",
+              fontFamily: 'var(--font-heading)',
               fontSize: '1.4rem',
-              fontWeight: 700,
+              fontWeight: 500,
               marginBottom: '1rem',
               color: 'var(--brand-navy)',
             }}

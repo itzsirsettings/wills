@@ -43,7 +43,7 @@
 .wills-site :is(h1, h2, h3, p, figcaption, a, pre) { overflow-wrap: break-word; }
 .brief-fields :is(input,select,textarea):focus { border-color: var(--brand-lavender); }
 .footer-wordmark-crop { --footer-wordmark-size: clamp(4.5rem, 18vw, 15rem); height: calc(var(--footer-wordmark-size) * .5); overflow: hidden; margin-top: 16px; }
-.footer-wordmark { font-size: var(--footer-wordmark-size); line-height: 1 !important; text-align: center; margin: 0; white-space: nowrap; }
+.footer-wordmark { font-family: var(--font-display); font-weight: 500; font-size: var(--footer-wordmark-size); line-height: 1 !important; text-align: center; margin: 0; white-space: nowrap; }
 .division-brands { padding-block: 30px; background: transparent; }
 .division-logos { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 20px; }
 .division-logos a { display: block; width: clamp(120px, 18vw, 200px); flex-shrink: 0; background: transparent; border: 0; padding: 0; box-shadow: none; }

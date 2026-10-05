@@ -8,7 +8,7 @@
 #hero .prisma-hero-content { position: relative; isolation: isolate; display: grid; grid-template-columns: minmax(0, 1fr); align-items: end; justify-content: initial; gap: 32px; height: auto; width: 100%; padding: 28px 20px max(28px, env(safe-area-inset-bottom)); text-align: left; color: #e1e0cc; }
 /* Keep contrast local to the copy, allowing 50% more image light through above it. */
 #hero .prisma-hero-content::before { content: ''; position: absolute; inset: -24px 0 0; z-index: -1; pointer-events: none; background: linear-gradient(180deg, transparent, rgb(0 0 0 / 32%) 24px); }
-#hero.prisma-hero h1 { font-size: clamp(4.5rem, 26vw, 15rem); line-height: .85; letter-spacing: -.07em; font-weight: 500; max-width: none; margin: 0; color: #e1e0cc; }
+#hero.prisma-hero h1 { font-family: var(--font-display); font-size: clamp(4.5rem, 26vw, 15rem); line-height: .95; letter-spacing: -.04em; font-weight: 500; max-width: none; margin: 0; color: #e1e0cc; }
 #hero .prisma-words { display: inline-flex; flex-wrap: wrap; white-space: pre-wrap; }
 #hero .prisma-word { display: inline-block; position: relative; }
 #hero .prisma-asterisk { position: absolute; top: .65em; right: -.3em; font-size: .31em; }
