@@ -1,5 +1,97 @@
 import { test, expect } from '@playwright/test';
 
+test('Prisma hero remains readable and usable across short, narrow and zoomed viewports', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.addInitScript(() => localStorage.setItem('wills-group:cookie-consent', 'accepted'));
+  const requests: string[] = [];
+  page.on('request', request => requests.push(request.url()));
+  await page.goto('/');
+  const heading = page.getByRole('heading', { level: 1, name: 'Wills Group of Company' });
+  await expect(heading).toBeVisible();
+  await expect(page.locator('#hero video')).toHaveCount(0);
+  await expect(page.locator('#hero nav')).toHaveCount(0);
+  for (const [width, height] of [[320, 568], [390, 844], [768, 1024], [1440, 900], [844, 390]]) {
+    await page.setViewportSize({ width, height });
+    const geometry = await page.locator('#hero').evaluate(section => {
+      const frame = section.querySelector('.prisma-hero-frame')!.getBoundingClientRect();
+      const heading = section.querySelector('h1')!.getBoundingClientRect();
+      const details = section.querySelector('.prisma-hero-details')!.getBoundingClientRect();
+      const buttons = [...section.querySelectorAll('a')].map(link => link.getBoundingClientRect().toJSON());
+      return { frame: frame.toJSON(), heading: heading.toJSON(), details: details.toJSON(), buttons };
+    });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(width);
+    expect(geometry.frame.left).toBe(0);
+    expect(geometry.frame.width).toBe(width);
+    expect(await page.locator('.prisma-hero-frame').evaluate(el => getComputedStyle(el).borderTopLeftRadius)).toBe('0px');
+    if (width >= 1024) expect(geometry.heading.right).toBeLessThanOrEqual(geometry.details.left);
+    else expect(geometry.heading.bottom).toBeLessThanOrEqual(geometry.details.top);
+    for (const button of geometry.buttons) {
+      expect(button.width).toBeGreaterThanOrEqual(44);
+      expect(button.height).toBeGreaterThanOrEqual(44);
+      expect(button.left).toBeGreaterThanOrEqual(geometry.frame.left);
+      expect(button.right).toBeLessThanOrEqual(geometry.frame.right);
+      expect(button.bottom).toBeLessThanOrEqual(geometry.frame.bottom);
+    }
+    expect(await page.locator('.prisma-word').evaluate(word => getComputedStyle(word).transform)).toBe('none');
+  }
+  expect(requests.filter(url => /\.mp4(?:\?|$)/.test(url))).toHaveLength(0);
+  expect(requests.filter(url => /prisma-motion-features.*\.js/.test(url))).toHaveLength(0);
+  await page.setViewportSize({ width: 1280, height: 900 });
+  // CSS zoom exercises text/layout reflow at the equivalent 640px viewport.
+  await page.evaluate(() => { document.documentElement.style.zoom = '2'; });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
+  for (const link of await page.locator('#hero a').all()) await expect(link).toBeVisible();
+});
+
+test('hero animation features can fail without hiding the title or project actions', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('wills-group:cookie-consent', 'accepted'));
+  let blockedFeatures = 0;
+  await page.route('**/assets/prisma-motion-features-*.js', route => { blockedFeatures++; return route.abort(); });
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await page.goto('/');
+  await expect(page.getByRole('heading', { level: 1, name: 'Wills Group of Company' })).toBeVisible();
+  const actions = page.locator('#hero a');
+  await expect(actions).toHaveCount(2);
+  for (const action of await actions.all()) await expect(action).toBeVisible();
+  await expect.poll(() => blockedFeatures).toBeGreaterThan(0);
+  await page.locator('#hero').getByRole('link', { name: 'Plan your project', exact: true }).click();
+  await expect(page).toHaveURL(/#contact$/);
+  await expect(page.getByRole('heading', { name: 'Tell us what you have in mind.' })).toBeVisible();
+  expect(errors).toEqual([]);
+});
+
+test('hero copy finishes its entrance once and retains contrast over every background', async ({ page }) => {
+  await page.clock.install({ time: new Date('2026-10-05T12:00:00Z') });
+  await page.addInitScript(() => localStorage.setItem('wills-group:cookie-consent', 'accepted'));
+  await page.goto('/');
+  const word = page.locator('.prisma-word').first();
+  await expect.poll(() => word.evaluate(el => getComputedStyle(el).transform)).toBe('none');
+  const contrast = await page.locator('#hero').evaluate(hero => {
+    const opacityStops = (gradient: string) => [...gradient.matchAll(/rgba\(0, 0, 0, ([\d.]+)\)/g)].map(match => Number(match[1]));
+    const minimumShade = Math.min(...opacityStops(getComputedStyle(hero.querySelector('.hero-shade')!).backgroundImage));
+    const localShade = Math.max(...opacityStops(getComputedStyle(hero.querySelector('.prisma-hero-content')!, '::before').backgroundImage));
+    const noiseOpacity = Number(getComputedStyle(hero.querySelector('.prisma-grain')!).opacity);
+    // Pure white is brighter than any pixel in any slide. Bound the grain by its
+    // brightest possible soft-light blend, even though it sits below the copy.
+    const shadedWhite = (1 - minimumShade) * (1 - localShade);
+    const brightestBackground = shadedWhite * (1 - noiseOpacity) + Math.sqrt(shadedWhite) * noiseOpacity;
+    const linear = (value: number) => value <= .04045 ? value / 12.92 : ((value + .055) / 1.055) ** 2.4;
+    const foreground = getComputedStyle(hero.querySelector('p')!).color.match(/[\d.]+/g)!.slice(0, 3).map(value => linear(Number(value) / 255));
+    const foregroundLuminance = .2126 * foreground[0] + .7152 * foreground[1] + .0722 * foreground[2];
+    return (foregroundLuminance + .05) / (linear(brightestBackground) + .05);
+  });
+  expect(contrast).toBeGreaterThanOrEqual(4.5);
+  await page.clock.pauseAt(new Date('2026-10-05T12:01:00Z'));
+  const initialImage = await page.locator('.hero-current-image').getAttribute('alt');
+  await page.clock.runFor(10_000);
+  await expect(page.locator('.hero-current-image')).not.toHaveAttribute('alt', initialImage!);
+  expect(await word.evaluate(el => getComputedStyle(el).transform)).toBe('none');
+  const primary = page.locator('#hero .prisma-primary-action');
+  await primary.focus();
+  expect(await primary.evaluate(el => getComputedStyle(el).outlineStyle)).not.toBe('none');
+});
+
 test('company logo appears in share metadata, browser icons and app manifest', async ({ page, request }) => {
   const sharingPath = '/media/wills/optimized/branding/company-logo-share.jpg';
   const initial = await request.get('/');
@@ -98,7 +190,7 @@ test('hero actions and ten-second slideshow work on mobile', async ({ page }) =>
   await expect(page.getByRole('heading', { name: 'Tell us what you have in mind.' })).toBeVisible();
 });
 
-test('navigation pins after services and returns to normal at the top', async ({ page }) => {
+test('navigation pins immediately on scroll and returns to normal at the top', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
   const header = page.locator('.landing-header');
@@ -106,8 +198,11 @@ test('navigation pins after services and returns to normal at the top', async ({
     await page.setViewportSize({ width, height: 900 });
     await page.evaluate(() => scrollTo({ top: 0, behavior: 'instant' }));
     await expect(header).not.toHaveClass(/is-pinned/);
+    await page.evaluate(() => scrollTo({ top: 1, behavior: 'instant' }));
+    await expect(header).toHaveClass(/is-pinned/);
+    expect((await header.boundingBox())!.y).toBe(0);
     await page.locator('#services').evaluate(section => scrollTo({ top: section.getBoundingClientRect().top + scrollY + 100, behavior: 'instant' }));
-    await expect(header).not.toHaveClass(/is-pinned/);
+    await expect(header).toHaveClass(/is-pinned/);
     await page.locator('#services').evaluate(section => scrollTo({ top: section.getBoundingClientRect().bottom + scrollY + 1, behavior: 'instant' }));
     await expect(header).toHaveClass(/is-pinned/);
     expect((await header.boundingBox())!.y).toBe(0);
@@ -119,6 +214,30 @@ test('navigation pins after services and returns to normal at the top', async ({
   await expect(page.getByRole('navigation', { name: 'Mobile navigation' })).toBeVisible();
   await page.keyboard.press('Escape');
   await expect(page.getByRole('button', { name: 'Open navigation' })).toBeFocused();
+});
+
+test('interiors copy sticks beneath navigation while designs remain accessible', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.addInitScript(() => localStorage.setItem('wills-group:cookie-consent', 'accepted'));
+  await page.goto('/');
+  const copy = page.locator('.interiors-copy');
+  for (const width of [1440, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    await expect(copy).toHaveClass(/is-sticky/);
+    const top = await page.locator('.header-inner').evaluate(el => el.getBoundingClientRect().height + (innerWidth > 760 ? 16 : 0));
+    await copy.evaluate((el, top) => scrollTo({ top: el.getBoundingClientRect().top + scrollY - top + 300, behavior: 'instant' }), top);
+    await expect.poll(() => copy.evaluate(el => el.getBoundingClientRect().top)).toBeCloseTo(top, 0);
+    const button = copy.getByRole('link', { name: 'Discuss an interior project', exact: true });
+    expect((await button.boundingBox())!.y).toBeGreaterThan(top);
+    await page.getByRole('button', { name: 'View Living room interior design concept', exact: true }).click();
+    await expect(page.getByRole('dialog').getByRole('heading', { name: 'Living room', exact: true })).toBeVisible();
+    await page.keyboard.press('Escape');
+  }
+  for (const [width, height] of [[320, 568], [844, 390]]) {
+    await page.setViewportSize({ width, height });
+    await expect(copy).not.toHaveClass(/is-sticky/);
+    await expect(copy.getByRole('link', { name: 'Discuss an interior project', exact: true })).toBeVisible();
+  }
 });
 
 test('all 33 mobile gallery cards stick below the header and remain interactive', async ({ page }) => {
@@ -141,8 +260,43 @@ test('all 33 mobile gallery cards stick below the header and remain interactive'
   await page.locator('.gallery-filters').getByRole('button', { name: /^Doors/ }).click();
   await expect(cards).toHaveCount(13);
   await page.setViewportSize({ width: 1440, height: 900 });
-  await expect(cards).toHaveCount(8);
+  await expect(cards).toHaveCount(13);
   expect(await cards.first().evaluate(card => getComputedStyle(card).position)).toBe('relative');
+});
+
+test('reference gallery uses tall portraits, centered copy and a sticky center design', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.addInitScript(() => localStorage.setItem('wills-group:cookie-consent', 'accepted'));
+  await page.goto('/');
+  await expect(page.locator('.project-tile')).toHaveCount(33);
+  const center = page.locator('.sticky-scroll-center');
+  await expect(center.locator('.project-tile')).toHaveCount(1);
+  expect(await page.locator('.sticky-gallery-intro').evaluate(el => getComputedStyle(el).textAlign)).toBe('center');
+  for (const width of [320, 390, 768, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    const frames = await page.locator('.project-image').evaluateAll(images => images.map(el => el.getBoundingClientRect().toJSON()));
+    for (const frame of frames) expect(frame.height / frame.width).toBeCloseTo(1.25, 2);
+  }
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.locator('.project-grid').evaluate(el => scrollTo({ top: el.getBoundingClientRect().top + scrollY - 96 + 400, behavior: 'instant' }));
+  await expect.poll(() => center.evaluate(el => el.getBoundingClientRect().top)).toBeCloseTo(96, 0);
+  expect((await center.boundingBox())!.y + (await center.boundingBox())!.height).toBeLessThanOrEqual(900);
+  for (const card of await center.locator('.project-tile').all()) {
+    const title = await card.locator('strong').innerText();
+    await card.click();
+    await expect(page.getByRole('dialog').getByRole('heading')).toHaveText(title);
+    await page.keyboard.press('Escape');
+    await expect(card).toBeFocused();
+  }
+  for (const [category, count] of [['Doors', 13], ['Gates', 13], ['Interiors', 1], ['Grilles', 3], ['Fabrication', 3]] as const) {
+    await page.locator('.gallery-filters').getByRole('button', { name: new RegExp(`^${category}`) }).click();
+    await expect(page.locator('.project-tile')).toHaveCount(count);
+  }
+  await page.locator('.gallery-filters').getByRole('button', { name: /^All/ }).click();
+  await page.setViewportSize({ width: 844, height: 390 });
+  expect(await center.evaluate(el => getComputedStyle(el).position)).toBe('static');
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(844);
 });
 
 test('policy links open dedicated pages and retain navigation on mobile', async ({ page }) => {
@@ -199,8 +353,9 @@ test('responsive corners, gallery controls and navigation work across viewport s
     await page.setViewportSize({ width, height });
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(width);
     expect(await page.locator('.header-logo').evaluate(el => Math.abs(el.getBoundingClientRect().x + el.getBoundingClientRect().width / 2 - innerWidth / 2))).toBeLessThan(1);
-    const badCorners = await page.locator('button, input, select, textarea, [class*="rounded"], .header-quote, .wills-button, .project-image, .floating-whatsapp').evaluateAll(elements => elements.filter(el => getComputedStyle(el).borderTopLeftRadius !== '12px').map(el => el.className));
+    const badCorners = await page.locator('button, input, select, textarea, [class*="rounded"], .header-quote, .wills-button, .project-image, .floating-whatsapp').evaluateAll(elements => elements.filter(el => !el.closest('#hero') && getComputedStyle(el).borderTopLeftRadius !== '12px').map(el => el.className));
     expect(badCorners).toEqual([]);
+    expect(await page.locator('.prisma-primary-action').evaluate(el => getComputedStyle(el).borderTopLeftRadius)).toBe('999px');
   }
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.getByRole('button', { name: 'View Living room interior design concept', exact: true }).click();
@@ -251,7 +406,7 @@ test('rebranded navigation, interiors and gallery remain functional', async ({ p
   await page.goto('/');
   await page.getByRole('button', { name: 'Got it', exact: true }).click({ timeout: 20_000 });
   await expect(page).toHaveTitle(/Wills Group of Company/);
-  await expect(page.locator('h1')).toContainText('Considered interiors.');
+  await expect(page.getByRole('heading', { level: 1, name: 'Wills Group of Company' })).toBeVisible();
   await expect(page.locator('.interior-concept-grid img')).toHaveCount(6);
   for (const image of await page.locator('.interior-concept-grid img').all()) {
     await image.scrollIntoViewIfNeeded();
@@ -262,10 +417,12 @@ test('rebranded navigation, interiors and gallery remain functional', async ({ p
     const layout = await page.locator('.hero-content').evaluate((element) => {
       const bounds = element.getBoundingClientRect();
       const heading = element.querySelector('h1')!.getBoundingClientRect();
-      return { center: bounds.x + bounds.width / 2, headingCenter: heading.x + heading.width / 2, alignment: getComputedStyle(element).textAlign };
+      const details = element.querySelector('.prisma-hero-details')!.getBoundingClientRect();
+      return { bounds, heading, details, alignment: getComputedStyle(element).textAlign };
     });
-    expect(layout.alignment).toBe('center');
-    expect(Math.abs(layout.center - layout.headingCenter)).toBeLessThan(2);
+    expect(layout.alignment).toBe('left');
+    if (width >= 1024) expect(layout.heading.right).toBeLessThanOrEqual(layout.details.left);
+    else expect(layout.heading.bottom).toBeLessThanOrEqual(layout.details.top);
   }
   await page.setViewportSize({ width: 1440, height: 900 });
   await expect(page.locator('body')).not.toContainText('Thewworks');

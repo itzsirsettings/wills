@@ -37,6 +37,7 @@ export default function LandingPage() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('#hero');
   const [headerPinned, setHeaderPinned] = useState(false);
+  const [interiorsSticky, setInteriorsSticky] = useState(false);
   const siteRef = useRef<HTMLDivElement>(null);
   useSiteMotion(siteRef);
   const menuButton = useRef<HTMLButtonElement>(null);
@@ -51,7 +52,16 @@ export default function LandingPage() {
         if (section && section.getBoundingClientRect().top <= offset + window.innerHeight * .25) current = href;
       }
       setActiveSection(current);
-      setHeaderPinned((document.getElementById('services')?.getBoundingClientRect().bottom ?? Infinity) <= 0);
+      setHeaderPinned(window.scrollY > 0);
+      const interiorCopy = siteRef.current?.querySelector<HTMLElement>('.interiors-copy');
+      if (interiorCopy) {
+        const height = interiorCopy.getBoundingClientRect().height;
+        const readingSpace = window.innerWidth <= 760 ? 240 : 32;
+        setInteriorsSticky(height <= window.innerHeight - offset - readingSpace);
+        const section = interiorCopy.closest<HTMLElement>('#interiors');
+        const measuredHeight = `${Math.ceil(height)}px`;
+        if (section?.style.getPropertyValue('--interiors-copy-height') !== measuredHeight) section?.style.setProperty('--interiors-copy-height', measuredHeight);
+      }
     };
     const schedule = () => { if (!frame) frame = requestAnimationFrame(update); };
     const resize = () => { if (window.innerWidth > 900) setMenuOpen(false); schedule(); };
@@ -59,7 +69,10 @@ export default function LandingPage() {
     update();
     window.addEventListener('scroll', schedule, { passive: true });
     window.addEventListener('resize', resize);
-    return () => { cancelAnimationFrame(frame); window.removeEventListener('scroll', schedule); window.removeEventListener('resize', resize); };
+    const observer = new ResizeObserver(schedule);
+    const interiorCopy = siteRef.current?.querySelector('.interiors-copy');
+    if (interiorCopy) observer.observe(interiorCopy);
+    return () => { observer.disconnect(); cancelAnimationFrame(frame); window.removeEventListener('scroll', schedule); window.removeEventListener('resize', resize); };
   }, []);
   useEffect(() => {
     if (!menuOpen) return;
@@ -117,7 +130,7 @@ export default function LandingPage() {
         <section id="interiors" className="interiors-section">
           <span id="beds" className="anchor-alias" />
           <div className="interiors-image"><picture><source type="image/avif" srcSet="/media/wills/optimized/interiors/living-room-640.avif 640w, /media/wills/optimized/interiors/living-room.avif 1280w" sizes="(max-width: 760px) 100vw, 50vw" /><img src="/media/wills/optimized/interiors/living-room.webp" alt="Living room design concept with ivory seating and walnut wall panelling" loading="lazy" decoding="async" width="1440" height="810" /></picture></div>
-          <div className="interiors-copy"><h2>The space beyond<br /><em>the entrance.</em></h2><p>Interiors are a core part of Wills Group of Company. Bring your room plan, inspiration and the way you want the space to feel.</p><p>From living rooms and kitchens to fitted storage, explore a direction and discuss materials, layout and finishing details with us.</p><a className="wills-button button-primary" href="#contact">Discuss an interior project</a></div>
+          <div className="interiors-copy-rail"><div className={`interiors-copy${interiorsSticky ? ' is-sticky' : ''}`}><h2>The space beyond<br /><em>the entrance.</em></h2><p>Interiors are a core part of Wills Group of Company. Bring your room plan, inspiration and the way you want the space to feel.</p><p>From living rooms and kitchens to fitted storage, explore a direction and discuss materials, layout and finishing details with us.</p><a className="wills-button button-primary" href="#contact">Discuss an interior project</a></div></div>
           <InteriorConcepts />
         </section>
         <HoverSliderDemo />

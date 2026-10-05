@@ -33,7 +33,7 @@ export function useSiteMotion(root: RefObject<HTMLDivElement | null>) {
           }).catch((error: unknown) => console.warn('Section animation unavailable; content remains visible.', error));
         }
       }, { threshold: 0.12 });
-      element.querySelectorAll('#subhero h2, #subhero p, #subhero .grid, #services .section-heading, .service-list article, .interiors-copy, .interior-concepts .section-heading, .project-grid, .process-grid article, .finishes-grid, .considerations-grid article, .faq-grid, .wills-contact-card').forEach(target => observer?.observe(target));
+      element.querySelectorAll('#subhero h2, #subhero p, #subhero .grid, #services .section-heading, .service-list article, .interiors-copy > *, .interior-concepts .section-heading, .project-grid, .process-grid article, .finishes-grid, .considerations-grid article, .faq-grid, .wills-contact-card').forEach(target => observer?.observe(target));
     };
     start();
     preference.addEventListener('change', start);

@@ -1,0 +1,11 @@
+/* The template's native sticky layout uses the company's own responsive media. */
+.sticky-gallery-intro { position: relative; isolation: isolate; display: flex; flex-direction: column; align-items: center; gap: 24px; text-align: center; }
+.sticky-gallery-intro p { max-width: 720px; margin: 0; }
+.sticky-gallery-intro::before { content: ''; position: absolute; inset: -40px -20px; z-index: -1; pointer-events: none; opacity: .45; background-image: linear-gradient(to right, #4f4f4f2e 1px, transparent 1px), linear-gradient(to bottom, #4f4f4f2e 1px, transparent 1px); background-size: 54px 54px; mask-image: radial-gradient(ellipse 70% 70% at 50% 0%, #000 60%, transparent 100%); }
+.project-grid.sticky-scroll-gallery { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; align-items: start; }
+.sticky-scroll-column { display: grid; gap: 14px; align-content: start; min-width: 0; }
+.sticky-scroll-item { min-width: 0; }
+.sticky-scroll-center.is-sticky { position: sticky; top: calc(var(--wills-header-height) + 16px); }
+@media (prefers-reduced-motion: reduce) {
+  .sticky-scroll-gallery img { transition: none; }
+}

@@ -66,7 +66,8 @@ export default defineConfig(({ mode }) => {
             }
 
             if (id.includes('motion') || id.includes('framer-motion')) {
-              return 'motion';
+              // Keep the lightweight hero renderer separate from lazy animation features.
+              return undefined;
             }
 
             if (id.includes('/gsap/')) {

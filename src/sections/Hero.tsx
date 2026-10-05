@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Pause, Play } from 'lucide-react';
 import { heroConfig } from '../config';
 import { mediaPath } from '../lib/brand';
+import { PrismaHero } from '../components/ui/prisma-hero';
 
 const heroAssets = [
   { src: mediaPath('0067'), alt: 'Black entrance gate with gold decorative details', label: 'Metalwork and gates' },
@@ -19,10 +20,11 @@ export default function Hero() {
   const [isPaused, setIsPaused] = useState(false);
   const [isInteracting, setIsInteracting] = useState(false);
   const [isVisible, setIsVisible] = useState(!document.hidden);
+  const [reduceMotion, setReduceMotion] = useState(() => matchMedia('(prefers-reduced-motion: reduce)').matches);
 
   useEffect(() => {
     const preference = matchMedia('(prefers-reduced-motion: reduce)');
-    const respectPreference = () => { if (preference.matches) setIsPaused(true); };
+    const respectPreference = () => { setReduceMotion(preference.matches); if (preference.matches) setIsPaused(true); };
     const visibilityChanged = () => setIsVisible(!document.hidden);
     respectPreference();
     preference.addEventListener('change', respectPreference);
@@ -55,24 +57,20 @@ export default function Hero() {
 
   if (!heroConfig.title) return null;
   return (
-    <section id="hero" className="wills-hero" aria-label="Featured doors, metalwork and interiors" aria-roledescription="carousel" onFocus={() => setIsInteracting(true)} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setIsInteracting(false); }}>
-      <div className="hero-photo">
+    <PrismaHero id="hero" aria-label="Featured doors, metalwork and interiors" aria-roledescription="carousel" onFocus={() => setIsInteracting(true)} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setIsInteracting(false); }}
+      title="Wills" titleLabel="Wills Group of Company"
+      description="Doors, gates and metalwork with presence. Interior projects shaped around the way you live."
+      primaryAction={{ label: heroConfig.ctaPrimaryText, href: heroConfig.ctaPrimaryTarget }}
+      secondaryAction={{ label: heroConfig.ctaSecondaryText, href: heroConfig.ctaSecondaryTarget }}
+      reduceMotion={reduceMotion}
+      background={<div className="hero-photo">
         <picture>
         <source srcSet={heroAssets[currentBgIndex].src.replace(/\.webp$/, '.avif')} type="image/avif" />
         <img key={heroAssets[currentBgIndex].src} className={previousBgIndex === null ? 'hero-current-image' : 'hero-current-image is-changing'} onAnimationEnd={() => setPreviousBgIndex(null)} src={heroAssets[currentBgIndex].src} alt={heroAssets[currentBgIndex].alt} fetchPriority="high" loading="eager" decoding="async" width="1440" height="1080" />
         </picture>
         {previousBgIndex !== null && <picture><source srcSet={heroAssets[previousBgIndex].src.replace(/\.webp$/, '.avif')} type="image/avif" /><img className="hero-previous-image" src={heroAssets[previousBgIndex].src} alt="" aria-hidden="true" decoding="async" width="1440" height="1080" /></picture>}
-      </div>
-      <div className="hero-shade" />
-      <div className="wills-container hero-content">
-        <h1>Strong entrances.<br /><em>Considered interiors.</em></h1>
-        <p>Doors, gates and metalwork with presence.<br className="desktop-break" /> Interior projects shaped around the way you live.</p>
-        <div className="hero-actions">
-          <a className="wills-button button-primary" href={heroConfig.ctaPrimaryTarget}>{heroConfig.ctaPrimaryText}</a>
-          <a className="hero-secondary" href={heroConfig.ctaSecondaryTarget}>{heroConfig.ctaSecondaryText}</a>
-        </div>
-      </div>
-      <button type="button" className="hero-motion-toggle" onClick={() => setIsPaused((paused) => !paused)} aria-label={isPaused ? 'Play hero slideshow' : 'Pause hero slideshow'}>{isPaused ? <Play size={20} aria-hidden="true" /> : <Pause size={20} aria-hidden="true" />}</button>
-    </section>
+      </div>}
+      playbackControl={<button type="button" className="hero-motion-toggle" onClick={() => setIsPaused((paused) => !paused)} aria-label={isPaused ? 'Play hero slideshow' : 'Pause hero slideshow'}>{isPaused ? <Play size={20} aria-hidden="true" /> : <Pause size={20} aria-hidden="true" />}</button>}
+    />
   );
 }

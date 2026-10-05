@@ -3,6 +3,8 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import './wills.css'
 import './interaction.css'
+import './prisma-hero.css'
+import './sticky-gallery.css'
 import App from './App.tsx'
 import ErrorBoundary from './components/ErrorBoundary.tsx'
 

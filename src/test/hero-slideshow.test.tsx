@@ -13,6 +13,10 @@ describe('hero slideshow', () => {
     render(<Hero />);
     expect(screen.getByRole('link', { name: 'Explore the designs' }).getAttribute('href')).toBe('#gallery');
     expect(screen.getByRole('link', { name: 'Plan your project' }).getAttribute('href')).toBe('#contact');
+    expect(screen.getByRole('heading', { level: 1, name: 'Wills Group of Company' })).toBeTruthy();
+    expect(screen.getByText('*').getAttribute('aria-hidden')).toBe('true');
+    expect(screen.queryByText('Prisma')).toBeNull();
+    expect(document.querySelector('#hero video')).toBeNull();
   });
 
   it('displays each image for ten seconds and wraps after the seventh image', () => {
@@ -23,6 +27,20 @@ describe('hero slideshow', () => {
     expect(screen.getByRole('img').getAttribute('alt')).toBe('Living room interior design concept');
     for (let index = 0; index < 6; index++) act(() => { vi.advanceTimersByTime(10_000); });
     expect(screen.getByRole('img').getAttribute('alt')).toContain('Black entrance gate');
+  });
+
+  it('prioritizes the current image and delays preloading only the next slide', () => {
+    render(<Hero />);
+    const imagePreloads = () => [...document.head.querySelectorAll<HTMLLinkElement>('link[rel="preload"]')].filter(link => link.as === 'image');
+    expect(screen.getByRole('img').getAttribute('fetchpriority')).toBe('high');
+    expect(imagePreloads()).toHaveLength(0);
+    act(() => { vi.advanceTimersByTime(1_999); });
+    expect(imagePreloads()).toHaveLength(0);
+    act(() => { vi.advanceTimersByTime(1); });
+    const preloads = imagePreloads();
+    expect(preloads).toHaveLength(1);
+    expect(preloads[0].href).toContain('/optimized/interiors/living-room.avif');
+    expect(preloads[0].fetchPriority).toBe('low');
   });
 
   it('allows pausing and resuming without visible slideshow labels', () => {

@@ -3,6 +3,7 @@ import { Play } from 'lucide-react';
 import DesignLightbox from './DesignLightbox';
 import { galleryPreviewPath, projectImages, projectSrc, suppliedVideos } from '../lib/welding-media';
 import { mediaDimensions } from '../lib/media-dimensions';
+import StickyScroll from './ui/sticky-scroll';
 
 const mobileGalleryQuery = '(max-width: 760px), (max-width: 900px) and (pointer: coarse)';
 
@@ -10,7 +11,6 @@ export default function ProjectGallery() {
   const [category, setCategory] = useState('All');
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const returnFocusRef = useRef<HTMLButtonElement>(null);
-  const [expanded, setExpanded] = useState(false);
   const [mobileStack, setMobileStack] = useState(() => matchMedia(mobileGalleryQuery).matches);
   useEffect(() => {
     const viewport = matchMedia(mobileGalleryQuery);
@@ -21,26 +21,25 @@ export default function ProjectGallery() {
   }, []);
   const [activeVideo, setActiveVideo] = useState<number | null>(null);
   const filtered = projectImages.filter((image) => category === 'All' || image.category === category);
-  const visible = mobileStack || expanded ? filtered : filtered.slice(0, 8);
+  const visible = filtered;
 
   return (
     <section id="gallery" className="wills-section wills-gallery">
       <span id="products" className="anchor-alias" />
       <div className="wills-container">
-        <div className="section-heading">
+        <div className="section-heading sticky-gallery-intro">
           <h2>Find your next<br /><em>entrance.</em></h2>
           <p>Explore the details, compare the designs, and bring a reference to your project discussion. Use a design reference to start a conversation about your space.</p>
         </div>
         <div className="gallery-filters" aria-label="Filter designs">
           {['All', 'Doors', 'Gates', 'Interiors', 'Grilles', 'Fabrication'].map((item) => (
-            <button key={item} type="button" aria-pressed={category === item} onClick={() => { setCategory(item); setExpanded(false); }}>
+            <button key={item} type="button" aria-pressed={category === item} onClick={() => setCategory(item)}>
               {item}
               <span>{item === 'All' ? projectImages.length : projectImages.filter((image) => image.category === item).length}</span>
             </button>
           ))}
         </div>
-        <div className="project-grid">
-          {visible.map((project) => (
+        <StickyScroll stacked={mobileStack} items={visible.map((project) => ({ id: project.number, content: (
             <button type="button" className="project-tile" key={project.number} onClick={(event) => { returnFocusRef.current = event.currentTarget; setSelectedIndex(filtered.indexOf(project)); }} aria-label={`View ${project.title} ${project.category}`}>
               <div className="project-image">
                 <picture>
@@ -51,9 +50,7 @@ export default function ProjectGallery() {
               </div>
               <span className="project-caption"><strong>{project.title}</strong><span>{project.category}</span></span>
             </button>
-          ))}
-        </div>
-        {!mobileStack && !expanded && filtered.length > visible.length && <button type="button" className="wills-button button-outline gallery-more" onClick={() => setExpanded(true)}>View all {filtered.length} designs </button>}
+          ) }))} />
         <div className="video-library">
           <div>
             <h3>See the details in motion.</h3>
