@@ -43,7 +43,7 @@ test('Prisma hero remains readable and usable across short, narrow and zoomed vi
   for (const link of await page.locator('#hero a').all()) await expect(link).toBeVisible();
 });
 
-test('hero animation features can fail without hiding the title or project actions', async ({ page }) => {
+test('hero animation features can fail without hiding the title or gallery action', async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem('wills-group:cookie-consent', 'accepted'));
   let blockedFeatures = 0;
   await page.route('**/assets/prisma-motion-features-*.js', route => { blockedFeatures++; return route.abort(); });
@@ -52,12 +52,13 @@ test('hero animation features can fail without hiding the title or project actio
   await page.goto('/');
   await expect(page.getByRole('heading', { level: 1, name: 'Wills Group of Company' })).toBeVisible();
   const actions = page.locator('#hero a');
-  await expect(actions).toHaveCount(2);
+  await expect(actions).toHaveCount(1);
+  await expect(page.locator('#hero').getByRole('link', { name: 'Plan your project', exact: true })).toHaveCount(0);
   for (const action of await actions.all()) await expect(action).toBeVisible();
   await expect.poll(() => blockedFeatures).toBeGreaterThan(0);
-  await page.locator('#hero').getByRole('link', { name: 'Plan your project', exact: true }).click();
-  await expect(page).toHaveURL(/#contact$/);
-  await expect(page.getByRole('heading', { name: 'Tell us what you have in mind.' })).toBeVisible();
+  await page.locator('#hero').getByRole('link', { name: 'Explore the designs', exact: true }).click();
+  await expect(page).toHaveURL(/#gallery$/);
+  await expect(page.getByRole('heading', { name: 'Find your next entrance.' })).toBeVisible();
   expect(errors).toEqual([]);
 });
 
@@ -267,10 +268,7 @@ test('hero actions and ten-second slideshow work on mobile', async ({ page }) =>
   await expect(page).toHaveURL(/#gallery$/);
   await page.clock.runFor(1000);
   await expect(page.getByRole('heading', { name: 'Find your next entrance.' })).toBeVisible();
-  await page.locator('#hero').getByRole('link', { name: 'Plan your project', exact: true }).click();
-  await expect(page).toHaveURL(/#contact$/);
-  await page.clock.runFor(1000);
-  await expect(page.getByRole('heading', { name: 'Tell us what you have in mind.' })).toBeVisible();
+  await expect(page.locator('#hero').getByRole('link', { name: 'Plan your project', exact: true })).toHaveCount(0);
 });
 
 test('navigation pins immediately on scroll and returns to normal at the top', async ({ page }) => {
@@ -430,7 +428,7 @@ test('interior captions, descriptions and alternative text use design concept wo
   await page.goto('/');
   await page.getByRole('button', { name: 'Got it', exact: true }).click({ timeout: 20_000 });
   await expect(page.locator('#hero').getByRole('link', { name: 'Explore the designs', exact: true })).toHaveAttribute('href', '#gallery');
-  await expect(page.locator('#hero').getByRole('link', { name: 'Plan your project', exact: true })).toHaveAttribute('href', '#contact');
+  await expect(page.locator('#hero').getByRole('link', { name: 'Plan your project', exact: true })).toHaveCount(0);
   await expect(page.locator('.hero-controls')).toHaveCount(0);
   await expect(page.locator('.hero-slide-caption')).toHaveCount(0);
   await page.getByRole('button', { name: 'View Living room interior design concept', exact: true }).click();

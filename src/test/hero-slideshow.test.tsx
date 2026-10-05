@@ -9,10 +9,10 @@ describe('hero slideshow', () => {
   });
   afterEach(() => { cleanup(); vi.restoreAllMocks(); vi.useRealTimers(); });
 
-  it('restores the gallery and project action links', () => {
+  it('keeps the gallery action and removes the project link from the hero', () => {
     render(<Hero />);
     expect(screen.getByRole('link', { name: 'Explore the designs' }).getAttribute('href')).toBe('#gallery');
-    expect(screen.getByRole('link', { name: 'Plan your project' }).getAttribute('href')).toBe('#contact');
+    expect(screen.queryByRole('link', { name: 'Plan your project' })).toBeNull();
     expect(screen.getByRole('heading', { level: 1, name: 'Wills Group of Company' })).toBeTruthy();
     expect(screen.getByText('*').getAttribute('aria-hidden')).toBe('true');
     expect(screen.queryByText('Prisma')).toBeNull();

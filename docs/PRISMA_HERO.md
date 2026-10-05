@@ -6,7 +6,9 @@
 
 **Alternatives:** Replacing the slideshow controller with the supplied template's video or moving timers into the presentation component.
 
-**Rationale:** Preserve the seven Wills images, ten-second interval, reduced-motion preference, hidden-tab pause, focus pause, AVIF/WebP delivery and delayed next-image preload. There is no hero video or additional navigation bar. Buttons remain mounted while animation features load or fail.
+**Rationale:** Preserve the seven Wills images, ten-second interval, reduced-motion preference, hidden-tab pause, focus pause, AVIF/WebP delivery and delayed next-image preload. There is no hero video or additional navigation bar. The gallery action remains mounted while animation features load or fail.
+
+The user's latest instruction removes the hero's secondary "Plan your project" link. The hero now has only "Explore the designs" linking to `#gallery`; contact links in navigation and the other sections retain their existing behavior.
 
 **Revisit when:** The number of slides or playback requirements change.
 
@@ -52,6 +54,7 @@ Gallery buttons inside each column use block layout. Inline button baseline spac
 
 Local validation on 2026-10-05:
 
+- The latest hero action removal passed all 114 tests, lint, TypeScript and both normal and Cloudflare production builds. Five focused browser regressions passed: responsive and zoomed layouts, animation-feature failure, contrast and entrance behavior, the ten-second slideshow and gallery anchor, and absence of the removed hero link. Contact actions outside the hero retain their existing behavior.
 - Lint, TypeScript, normal production build and the Cloudflare production build passed for the final gallery refinement.
 - The preceding release passed 114 unit tests in 14 files. Command: `vitest run --maxWorkers=1 --no-file-parallelism --testTimeout=30000 --hookTimeout=60000`; extended runner timeouts accommodate this host's slow startup and media metadata checks.
 - The preceding release passed 15 Edge/Playwright browser tests against the production preview, including 320/390/768/1440px widths, short landscape, 200% CSS zoom, focus targets, reduced motion, missing animation features, slideshow timing/wrap, sticky navigation/interiors, gallery proportions, lightboxes, video selection, policies and contact interactions.
@@ -59,6 +62,8 @@ Local validation on 2026-10-05:
 - The conservative hero text contrast bound over pure white imagery, including the brightest grain blend, passed the 4.5:1 check. No entrance movement or animation feature request occurs with reduced motion.
 
 Three cold-cache runs per version used the same 390×844px profile, 1.6Mbps download, 150ms network latency and 4× CPU slowdown:
+
+These loading measurements describe the preceding hero migration, before the clipped video integration and secondary-action removal. They are not measurements of the latest release.
 
 | Measurement | Previous hero | Updated site |
 | --- | ---: | ---: |

@@ -56,11 +56,10 @@ export interface PrismaHeroProps extends Omit<ComponentPropsWithoutRef<'section'
   titleLabel: string;
   description: string;
   primaryAction: HeroAction;
-  secondaryAction: HeroAction;
   reduceMotion?: boolean;
 }
 
-export function PrismaHero({ background, playbackControl, title, titleLabel, description, primaryAction, secondaryAction, reduceMotion = false, className = '', ...sectionProps }: PrismaHeroProps) {
+export function PrismaHero({ background, playbackControl, title, titleLabel, description, primaryAction, reduceMotion = false, className = '', ...sectionProps }: PrismaHeroProps) {
   const preference = useReducedMotion();
   const reduced = reduceMotion || preference === true;
   const [ready, setReady] = useState(false);
@@ -95,7 +94,6 @@ export function PrismaHero({ background, playbackControl, title, titleLabel, des
           {animatedCopy(<HeroDescription>{description}</HeroDescription>)}
           <div className="hero-actions prisma-hero-actions">
             <a className="wills-button prisma-primary-action" href={primaryAction.href}>{primaryAction.label}<span className="prisma-action-arrow" aria-hidden="true"><ArrowRight size={18} /></span></a>
-            <a className="hero-secondary prisma-secondary-action" href={secondaryAction.href}>{secondaryAction.label}<ArrowRight size={18} aria-hidden="true" /></a>
           </div>
         </div>
       </div>

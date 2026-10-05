@@ -61,7 +61,6 @@ export default function Hero() {
       title="Wills" titleLabel="Wills Group of Company"
       description="Doors, gates and metalwork with presence. Interior projects shaped around the way you live."
       primaryAction={{ label: heroConfig.ctaPrimaryText, href: heroConfig.ctaPrimaryTarget }}
-      secondaryAction={{ label: heroConfig.ctaSecondaryText, href: heroConfig.ctaSecondaryTarget }}
       reduceMotion={reduceMotion}
       background={<div className="hero-photo">
         <picture>
