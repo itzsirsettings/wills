@@ -138,10 +138,83 @@ test('gallery side previews stay uniform and videos load only after selection', 
   await page.getByRole('button', { name: 'Clip 01', exact: true }).click();
   await expect(page.locator('.project-video')).toHaveAttribute('poster', /^\/media\/wills\/optimized\/VID-.*\.webp$/);
   await expect.poll(() => page.locator('.project-video').evaluate(video => (video as HTMLVideoElement).readyState), { timeout: 15000 }).toBeGreaterThanOrEqual(1);
-  await page.locator('.project-video').evaluate(video => (video as HTMLVideoElement).play());
+  await expect.poll(() => page.locator('.project-video').evaluate(video => (video as HTMLVideoElement).paused), { timeout: 15000 }).toBe(false);
   await expect.poll(() => page.locator('.project-video').evaluate(video => (video as HTMLVideoElement).currentTime), { timeout: 15000 }).toBeGreaterThan(0.5);
   await page.locator('.project-video').evaluate(video => (video as HTMLVideoElement).pause());
   expect(videoRequests.some(url => /optimized\/VID-.*\.mp4$/.test(url))).toBe(true);
+  for (let index = 2; index <= 12; index++) {
+    const name = `Clip ${String(index).padStart(2, '0')}`;
+    await page.getByRole('button', { name, exact: true }).click();
+    const player = page.locator('.project-video');
+    await expect(player).toHaveCount(1);
+    await expect(player).toHaveAttribute('aria-label', `${name} video`);
+    expect(await player.evaluate(video => ({ volume: (video as HTMLVideoElement).volume, muted: (video as HTMLVideoElement).muted }))).toEqual({ volume: 0.5, muted: false });
+    expect(await player.evaluate(video => Boolean(video.closest('.clipped-media-card .clipped-media-frame')))).toBe(true);
+    await expect.poll(() => player.evaluate(video => (video as HTMLVideoElement).readyState), { timeout: 15000 }).toBeGreaterThanOrEqual(1);
+    await expect.poll(() => player.evaluate(video => (video as HTMLVideoElement).paused), { timeout: 15000 }).toBe(false);
+    await expect.poll(() => player.evaluate(video => (video as HTMLVideoElement).currentTime), { timeout: 15000 }).toBeGreaterThan(0.1);
+    await player.evaluate(video => (video as HTMLVideoElement).pause());
+  }
+  await expect(page.locator('.project-video')).toHaveAttribute('src', /WA0093\.mp4$/);
+});
+
+test('clipped video previews adapt to screens, keyboard input and playback failures', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.addInitScript(() => localStorage.setItem('wills-group:cookie-consent', 'accepted'));
+  const requests: string[] = [];
+  page.on('request', request => { if (/\.mp4(?:\?|$)/.test(request.url())) requests.push(request.url()); });
+  await page.goto('/');
+  const previews = page.getByRole('region', { name: 'Choose a video', exact: true });
+  const cards = previews.getByRole('button');
+  await expect(cards).toHaveCount(12);
+  await expect(page.locator('.project-video')).toHaveCount(0);
+  await expect(page.locator('.clipped-media-definitions clipPath')).toHaveCount(3);
+  expect(await page.locator('.video-library-heading').evaluate(el => getComputedStyle(el).textAlign)).toBe('center');
+  for (const [width, columns] of [[320, 1], [390, 1], [768, 2], [1440, 3]]) {
+    await page.setViewportSize({ width, height: 900 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(width);
+    expect(await previews.evaluate(el => getComputedStyle(el).gridTemplateColumns.split(' ').length)).toBe(columns);
+    const bounds = (await cards.first().boundingBox())!;
+    expect(bounds.width).toBeGreaterThanOrEqual(44);
+    expect(bounds.height).toBeGreaterThanOrEqual(44);
+    expect(await previews.locator('.clipped-media-frame').first().evaluate(el => getComputedStyle(el).clipPath)).toContain('clip-squiggle');
+  }
+  expect(requests).toHaveLength(0);
+  await cards.first().focus();
+  expect(await cards.first().evaluate(el => getComputedStyle(el).outlineStyle)).toBe('solid');
+  await page.keyboard.press('Enter');
+  const player = page.locator('.project-video');
+  await expect(player).toBeFocused();
+  await expect(player).toHaveAttribute('controls', '');
+  await expect(player).toHaveAttribute('playsinline', '');
+  expect(await player.evaluate(video => ({ volume: (video as HTMLVideoElement).volume, muted: (video as HTMLVideoElement).muted }))).toEqual({ volume: 0.5, muted: false });
+  expect(await player.evaluate(video => Boolean(video.closest('.clipped-media-card .clipped-media-frame')))).toBe(true);
+  await expect.poll(() => player.evaluate(video => (video as HTMLVideoElement).readyState), { timeout: 15000 }).toBeGreaterThanOrEqual(1);
+  for (const [width, height] of [[320, 568], [390, 844], [768, 1024], [1440, 900], [844, 390]]) {
+    await page.setViewportSize({ width, height });
+    await player.evaluate(video => scrollTo({ top: video.getBoundingClientRect().top + scrollY - document.querySelector('.header-inner')!.getBoundingClientRect().height - 16, behavior: 'instant' }));
+    const geometry = await player.evaluate(video => ({ video: video.getBoundingClientRect().toJSON(), frame: video.parentElement!.getBoundingClientRect().toJSON() }));
+    expect(geometry.video.width).toBeCloseTo(geometry.frame.width, 0);
+    expect(geometry.video.height).toBeCloseTo(geometry.frame.height, 0);
+    expect(geometry.video.bottom).toBeLessThanOrEqual(height);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(width);
+  }
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await player.evaluate(video => (video as HTMLVideoElement).play());
+  await page.evaluate(() => { Object.defineProperty(document, 'hidden', { configurable: true, value: true }); document.dispatchEvent(new Event('visibilitychange')); });
+  expect(await player.evaluate(video => (video as HTMLVideoElement).paused)).toBe(true);
+  await page.evaluate(() => { Reflect.deleteProperty(document, 'hidden'); });
+  const brokenClip = '**/VID-20261003-WA0083.mp4';
+  await page.route(brokenClip, route => route.abort());
+  await page.getByRole('button', { name: 'Clip 02', exact: true }).click();
+  await expect(page.getByRole('alert')).toContainText('This clip could not be loaded.');
+  await page.unroute(brokenClip);
+  await page.getByRole('button', { name: 'Try again', exact: true }).click();
+  await expect(page.getByRole('alert')).toHaveCount(0);
+  await expect.poll(() => player.evaluate(video => (video as HTMLVideoElement).readyState), { timeout: 15000 }).toBeGreaterThanOrEqual(1);
+  await page.getByRole('button', { name: 'Close Clip 02', exact: true }).click();
+  await expect(page.locator('.project-video')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Clip 02', exact: true })).toBeFocused();
 });
 
 test('hero actions and ten-second slideshow work on mobile', async ({ page }) => {

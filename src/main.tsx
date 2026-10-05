@@ -5,6 +5,7 @@ import './wills.css'
 import './interaction.css'
 import './prisma-hero.css'
 import './sticky-gallery.css'
+import './clipped-media.css'
 import App from './App.tsx'
 import ErrorBoundary from './components/ErrorBoundary.tsx'
 

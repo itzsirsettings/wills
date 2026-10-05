@@ -139,9 +139,6 @@ html { scroll-padding-top: calc(var(--wills-header-height) + 16px); }
 .video-library { border-top: 1px solid var(--wills-line); margin-top: 70px; padding-top: 45px; }
 .video-library h3 { font-size: 21px; letter-spacing: -.04em; }
 .video-library p { color: var(--wills-muted); margin-top: 12px; }
-.video-picker { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 25px; }
-.video-picker button { border: 1px solid var(--wills-line); display: flex; align-items: center; gap: 10px; padding: 12px; font-size: 13px; min-height: 44px; }
-.video-picker button[aria-pressed=true] { background: var(--wills-charcoal); color: white; }
 .project-video { display: block; margin-top: 30px; width: 100%; height: min(640px, 65svh); object-fit: contain; background: #111; }
 .video-note { font-size: 12px; }
 .project-dialog { max-width: min(950px, 94vw); max-height: 94svh; overflow: auto; background: var(--wills-paper); }

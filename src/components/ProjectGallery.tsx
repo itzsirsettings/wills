@@ -1,11 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
-import { Play } from 'lucide-react';
 import DesignLightbox from './DesignLightbox';
 import { galleryPreviewPath, projectImages, projectSrc, suppliedVideos } from '../lib/welding-media';
 import { mediaDimensions } from '../lib/media-dimensions';
 import StickyScroll from './ui/sticky-scroll';
+import ClippedMediaGallery, { type ClippedMediaItem, type ClipShape } from './ui/clip-path-image';
 
 const mobileGalleryQuery = '(max-width: 760px), (max-width: 900px) and (pointer: coarse)';
+const clipShapes: ClipShape[] = ['clip-squiggle', 'clip-rect', 'clip-another'];
+const videoPreviews: Extract<ClippedMediaItem, { type: 'video' }>[] = suppliedVideos.map((src, index) => ({
+  id: src, src, type: 'video', alt: `Clip ${String(index + 1).padStart(2, '0')}`,
+  clipId: clipShapes[index % clipShapes.length],
+  poster: src.replace(/^https?:\/\/[^/]+/, '').replace(/\.mp4$/, '.webp'),
+}));
 
 export default function ProjectGallery() {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
@@ -18,7 +24,6 @@ export default function ProjectGallery() {
     viewport.addEventListener('change', update);
     return () => viewport.removeEventListener('change', update);
   }, []);
-  const [activeVideo, setActiveVideo] = useState<number | null>(null);
 
   return (
     <section id="gallery" className="wills-section wills-gallery">
@@ -40,15 +45,11 @@ export default function ProjectGallery() {
             </button>
           ) }))} />
         <div className="video-library">
-          <div>
+          <div className="video-library-heading">
             <h3>See the details in motion.</h3>
             <p>Explore twelve design videos. Choose a clip to view it.</p>
           </div>
-          <div className="video-picker" aria-label="Choose a video">
-            {suppliedVideos.map((src, index) => <button key={src} type="button" aria-pressed={activeVideo === index} onClick={() => setActiveVideo(index)}><Play size={14} aria-hidden="true" />Clip {String(index + 1).padStart(2, '0')}</button>)}
-          </div>
-          {activeVideo !== null && <video key={activeVideo} className="project-video" src={suppliedVideos[activeVideo]} poster={suppliedVideos[activeVideo].replace(/^https?:\/\/[^/]+/, '').replace(/\.mp4$/, '.webp')} controls playsInline preload="metadata" aria-label={`Supplied metalwork video ${activeVideo + 1}`}>Your browser does not support video playback.</video>}
-          {activeVideo !== null && <p className="video-note">Use the playback controls to pause, adjust volume or view the details full-screen.</p>}
+          <ClippedMediaGallery mediaItems={videoPreviews} aria-label="Choose a video" />
         </div>
       </div>
       <DesignLightbox returnFocusRef={returnFocusRef} images={projectImages.map((project) => ({ src: projectSrc(project), avif: projectSrc(project).replace(/\.webp$/, '.avif'), title: project.title, alt: project.alt, ...mediaDimensions[project.number] }))} selectedIndex={selectedIndex} onSelectedIndexChange={setSelectedIndex} description="Design reference. Confirm materials, dimensions and finishes in your project quote." />
