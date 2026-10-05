@@ -129,20 +129,12 @@ html { scroll-padding-top: calc(var(--wills-header-height) + 16px); }
 .interior-concept-grid figcaption span { color: var(--brand-lavender); font-size: 12px; }
 .wills-gallery { background: var(--wills-paper); }
 .anchor-alias { position: absolute; top: 0; }
-.gallery-filters { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 35px; }
-.gallery-filters button { border: 1px solid var(--wills-line); padding: 11px 17px; display: flex; gap: 18px; align-items: center; min-height: 44px; font-size: 14px; }
-.gallery-filters button span { color: var(--brand-muted); font-size: 11px; }
-.gallery-filters button[aria-pressed=true] { background: var(--wills-charcoal); border-color: var(--wills-charcoal); color: white; }
-.gallery-filters button[aria-pressed=true] span { color: var(--brand-lavender); }
 .project-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px 26px; }
 .project-tile { text-align: left; width: 100%; }
 .project-image { position: relative; overflow: hidden; background: var(--brand-surface); aspect-ratio: 4/5; }
 .project-image picture { display: block; width: 100%; height: 100%; }
 .project-image img { width: 100%; height: 100%; object-fit: cover; transition: transform .3s; }
 .project-open { position: absolute; bottom: 16px; right: 16px; border-radius: 50%; padding: 12px; background: var(--wills-paper); color: #111; }
-.project-caption { display: flex; flex-direction: column; gap: 6px; padding-top: 18px; min-height: 76px; }
-.project-caption strong { font-size: 17px; font-weight: 500; }
-.project-caption > span { font-size: 12px; color: var(--wills-muted); }
 .gallery-more { margin-top: 38px; }
 .video-library { border-top: 1px solid var(--wills-line); margin-top: 70px; padding-top: 45px; }
 .video-library h3 { font-size: 21px; letter-spacing: -.04em; }
@@ -268,10 +260,7 @@ html { scroll-padding-top: calc(var(--wills-header-height) + 16px); }
   .interior-concepts { padding-block: 20px 60px; }
   .interior-concept-grid { grid-template-columns: 1fr; gap: 30px; }
   .project-grid { grid-template-columns: 1fr 1fr; gap: 28px 14px; }
-  .project-caption strong { font-size: 14px; }
   .project-open { bottom: 9px; right: 9px; padding: 8px; }
-  .gallery-filters { gap: 7px; }
-  .gallery-filters button { padding: 10px 12px; gap: 8px; font-size: 12px; }
   .process-grid { grid-template-columns: 1fr 1fr; gap: 35px 20px; }
   .process-grid h3 { font-size: 14px; }
   .process-grid p { font-size: 14px; }

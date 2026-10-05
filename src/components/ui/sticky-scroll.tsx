@@ -32,7 +32,7 @@ const StickyScroll = forwardRef<HTMLDivElement, StickyScrollProps>(function Stic
   const flat = stacked || items.length < 7;
   if (flat) return <div {...props} ref={ref} className={`project-grid ${className}`}>{items.map(item => item.content)}</div>;
 
-  const featured = items.slice(1, 2);
+  const featured = items.slice(1, 4);
   const featuredIds = new Set(featured.map(item => item.id));
   const remaining = items.filter(item => !featuredIds.has(item.id));
   const left = remaining.filter((_, index) => index % 2 === 0);

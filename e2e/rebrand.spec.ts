@@ -113,7 +113,7 @@ test('company logo appears in share metadata, browser icons and app manifest', a
   await expect(page.locator('.header-logo img')).toHaveAttribute('src', '/media/wills/optimized/wills-group-logo.png');
 });
 
-test('gallery previews stay uniform and videos load only after selection', async ({ page }) => {
+test('gallery side previews stay uniform and videos load only after selection', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.addInitScript(() => localStorage.setItem('wills-group:cookie-consent', 'accepted'));
   const videoRequests: string[] = [];
@@ -125,7 +125,7 @@ test('gallery previews stay uniform and videos load only after selection', async
   expect(await page.locator('.project-tile img').first().evaluate(image => (image as HTMLImageElement).currentSrc)).toMatch(/optimized\/gallery\/.*-(360|720|1080)\.avif$/);
   for (const width of [320, 390, 768, 1440]) {
     await page.setViewportSize({ width, height: 844 });
-    const frames = await page.locator('.project-image').evaluateAll(images => images.map(image => {
+    const frames = await page.locator('.project-image').evaluateAll(images => images.filter(image => !image.closest('.sticky-scroll-center')).map(image => {
       const bounds = image.getBoundingClientRect(); return { width: bounds.width, height: bounds.height };
     }));
     for (const frame of frames) {
@@ -257,43 +257,54 @@ test('all 33 mobile gallery cards stick below the header and remain interactive'
   await expect(page.getByRole('dialog').getByRole('heading')).toHaveText('Ornamental gate design');
   await page.keyboard.press('Escape');
   await expect(cards.nth(32)).toBeFocused();
-  await page.locator('.gallery-filters').getByRole('button', { name: /^Doors/ }).click();
-  await expect(cards).toHaveCount(13);
+  await expect(page.locator('[aria-label="Filter designs"]')).toHaveCount(0);
   await page.setViewportSize({ width: 1440, height: 900 });
-  await expect(cards).toHaveCount(13);
+  await expect(cards).toHaveCount(33);
   expect(await cards.first().evaluate(card => getComputedStyle(card).position)).toBe('relative');
 });
 
-test('reference gallery uses tall portraits, centered copy and a sticky center design', async ({ page }) => {
+test('gallery shows all designs with three varied-height sticky center images', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.addInitScript(() => localStorage.setItem('wills-group:cookie-consent', 'accepted'));
   await page.goto('/');
   await expect(page.locator('.project-tile')).toHaveCount(33);
   const center = page.locator('.sticky-scroll-center');
-  await expect(center.locator('.project-tile')).toHaveCount(1);
+  await expect(center.locator('.project-tile')).toHaveCount(3);
+  await expect(page.locator('[aria-label="Filter designs"]')).toHaveCount(0);
+  await expect(page.locator('.project-caption')).toHaveCount(0);
+  for (const image of await page.locator('.project-image img').all()) {
+    expect(await image.evaluate(el => getComputedStyle(el).objectFit)).toBe('cover');
+  }
   expect(await page.locator('.sticky-gallery-intro').evaluate(el => getComputedStyle(el).textAlign)).toBe('center');
   for (const width of [320, 390, 768, 1440]) {
     await page.setViewportSize({ width, height: 900 });
-    const frames = await page.locator('.project-image').evaluateAll(images => images.map(el => el.getBoundingClientRect().toJSON()));
+    const frames = await page.locator('.project-image').evaluateAll(images => images.filter(el => !el.closest('.sticky-scroll-center')).map(el => el.getBoundingClientRect().toJSON()));
     for (const frame of frames) expect(frame.height / frame.width).toBeCloseTo(1.25, 2);
   }
   await page.setViewportSize({ width: 1440, height: 900 });
+  const heights = await center.locator('.project-image').evaluateAll(images => images.map(el => el.getBoundingClientRect().height));
+  expect(heights[0]).toBeGreaterThan(heights[1]);
+  expect(heights[1]).toBeGreaterThan(heights[2]);
+  await expect(center).toHaveClass(/is-sticky/);
   await page.locator('.project-grid').evaluate(el => scrollTo({ top: el.getBoundingClientRect().top + scrollY - 96 + 400, behavior: 'instant' }));
   await expect.poll(() => center.evaluate(el => el.getBoundingClientRect().top)).toBeCloseTo(96, 0);
+  await page.evaluate(() => scrollBy({ top: 600, behavior: 'instant' }));
+  await expect.poll(() => center.evaluate(el => el.getBoundingClientRect().top)).toBeCloseTo(96, 0);
   expect((await center.boundingBox())!.y + (await center.boundingBox())!.height).toBeLessThanOrEqual(900);
-  for (const card of await center.locator('.project-tile').all()) {
-    const title = await card.locator('strong').innerText();
+  const centerTitles = ['Sculpted entrance door', 'Geometric metal door', 'Gold-pattern entrance gate'];
+  for (const [index, card] of (await center.locator('.project-tile').all()).entries()) {
     await card.click();
-    await expect(page.getByRole('dialog').getByRole('heading')).toHaveText(title);
+    await expect(page.getByRole('dialog').getByRole('heading')).toHaveText(centerTitles[index]);
     await page.keyboard.press('Escape');
     await expect(card).toBeFocused();
   }
-  for (const [category, count] of [['Doors', 13], ['Gates', 13], ['Interiors', 1], ['Grilles', 3], ['Fabrication', 3]] as const) {
-    await page.locator('.gallery-filters').getByRole('button', { name: new RegExp(`^${category}`) }).click();
-    await expect(page.locator('.project-tile')).toHaveCount(count);
-  }
-  await page.locator('.gallery-filters').getByRole('button', { name: /^All/ }).click();
+  await page.setViewportSize({ width: 1024, height: 768 });
+  await expect(center).toHaveClass(/is-sticky/);
+  await page.locator('.project-grid').evaluate(el => scrollTo({ top: el.getBoundingClientRect().top + scrollY - 96 + 500, behavior: 'instant' }));
+  await expect.poll(() => center.evaluate(el => el.getBoundingClientRect().top)).toBeCloseTo(96, 0);
+  await expect(center.locator('.project-tile')).toHaveCount(3);
+  await expect(page.locator('.project-tile')).toHaveCount(33);
   await page.setViewportSize({ width: 844, height: 390 });
   expect(await center.evaluate(el => getComputedStyle(el).position)).toBe('static');
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(844);
@@ -426,8 +437,8 @@ test('rebranded navigation, interiors and gallery remain functional', async ({ p
   }
   await page.setViewportSize({ width: 1440, height: 900 });
   await expect(page.locator('body')).not.toContainText('Thewworks');
-  await page.locator('#gallery').getByRole('button', { name: /^Interiors/ }).click();
-  await expect(page.locator('.project-tile')).toHaveCount(1);
+  await expect(page.locator('[aria-label="Filter designs"]')).toHaveCount(0);
+  await expect(page.locator('.project-tile')).toHaveCount(33);
   await page.getByRole('button', { name: 'View Interior door reference Interiors', exact: true }).click();
   await expect(page.getByRole('dialog')).toBeVisible();
   await page.keyboard.press('Escape');

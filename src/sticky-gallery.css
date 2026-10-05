@@ -5,6 +5,16 @@
 .project-grid.sticky-scroll-gallery { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; align-items: start; }
 .sticky-scroll-column { display: grid; gap: 14px; align-content: start; min-width: 0; }
 .sticky-scroll-item { min-width: 0; }
+.sticky-scroll-item > .project-tile { display: block; }
+.sticky-scroll-center {
+  /* Divide the available viewport between three images, two gaps and navbar clearance. */
+  --center-image-space: calc(100svh - var(--wills-header-height) - 32px - 28px);
+}
+.sticky-scroll-center .project-image { aspect-ratio: auto; }
+.sticky-scroll-center .sticky-scroll-item:nth-child(1) .project-image { height: clamp(160px, calc(var(--center-image-space) * .4), 440px); }
+.sticky-scroll-center .sticky-scroll-item:nth-child(2) .project-image { height: clamp(140px, calc(var(--center-image-space) * .34), 380px); }
+.sticky-scroll-center .sticky-scroll-item:nth-child(3) .project-image { height: clamp(120px, calc(var(--center-image-space) * .26), 300px); }
+.wills-gallery .project-image img { object-fit: cover; }
 .sticky-scroll-center.is-sticky { position: sticky; top: calc(var(--wills-header-height) + 16px); }
 @media (prefers-reduced-motion: reduce) {
   .sticky-scroll-gallery img { transition: none; }

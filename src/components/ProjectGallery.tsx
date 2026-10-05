@@ -8,7 +8,6 @@ import StickyScroll from './ui/sticky-scroll';
 const mobileGalleryQuery = '(max-width: 760px), (max-width: 900px) and (pointer: coarse)';
 
 export default function ProjectGallery() {
-  const [category, setCategory] = useState('All');
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const returnFocusRef = useRef<HTMLButtonElement>(null);
   const [mobileStack, setMobileStack] = useState(() => matchMedia(mobileGalleryQuery).matches);
@@ -20,8 +19,6 @@ export default function ProjectGallery() {
     return () => viewport.removeEventListener('change', update);
   }, []);
   const [activeVideo, setActiveVideo] = useState<number | null>(null);
-  const filtered = projectImages.filter((image) => category === 'All' || image.category === category);
-  const visible = filtered;
 
   return (
     <section id="gallery" className="wills-section wills-gallery">
@@ -31,16 +28,8 @@ export default function ProjectGallery() {
           <h2>Find your next<br /><em>entrance.</em></h2>
           <p>Explore the details, compare the designs, and bring a reference to your project discussion. Use a design reference to start a conversation about your space.</p>
         </div>
-        <div className="gallery-filters" aria-label="Filter designs">
-          {['All', 'Doors', 'Gates', 'Interiors', 'Grilles', 'Fabrication'].map((item) => (
-            <button key={item} type="button" aria-pressed={category === item} onClick={() => setCategory(item)}>
-              {item}
-              <span>{item === 'All' ? projectImages.length : projectImages.filter((image) => image.category === item).length}</span>
-            </button>
-          ))}
-        </div>
-        <StickyScroll stacked={mobileStack} items={visible.map((project) => ({ id: project.number, content: (
-            <button type="button" className="project-tile" key={project.number} onClick={(event) => { returnFocusRef.current = event.currentTarget; setSelectedIndex(filtered.indexOf(project)); }} aria-label={`View ${project.title} ${project.category}`}>
+        <StickyScroll stacked={mobileStack} items={projectImages.map((project, index) => ({ id: project.number, content: (
+            <button type="button" className="project-tile" key={project.number} onClick={(event) => { returnFocusRef.current = event.currentTarget; setSelectedIndex(index); }} aria-label={`View ${project.title} ${project.category}`}>
               <div className="project-image">
                 <picture>
                   <source type="image/avif" srcSet={[360, 720, 1080].map(width => `${galleryPreviewPath(project, width, 'avif')} ${width}w`).join(', ')} sizes={mobileStack ? '(max-width: 760px) calc(100vw - 40px), calc(100vw - 64px)' : '(max-width: 1100px) 30vw, 430px'} />
@@ -48,7 +37,6 @@ export default function ProjectGallery() {
                 </picture>
 
               </div>
-              <span className="project-caption"><strong>{project.title}</strong><span>{project.category}</span></span>
             </button>
           ) }))} />
         <div className="video-library">
@@ -63,7 +51,7 @@ export default function ProjectGallery() {
           {activeVideo !== null && <p className="video-note">Use the playback controls to pause, adjust volume or view the details full-screen.</p>}
         </div>
       </div>
-      <DesignLightbox returnFocusRef={returnFocusRef} images={filtered.map((project) => ({ src: projectSrc(project), avif: projectSrc(project).replace(/\.webp$/, '.avif'), title: project.title, alt: project.alt, ...mediaDimensions[project.number] }))} selectedIndex={selectedIndex} onSelectedIndexChange={setSelectedIndex} description="Design reference. Confirm materials, dimensions and finishes in your project quote." />
+      <DesignLightbox returnFocusRef={returnFocusRef} images={projectImages.map((project) => ({ src: projectSrc(project), avif: projectSrc(project).replace(/\.webp$/, '.avif'), title: project.title, alt: project.alt, ...mediaDimensions[project.number] }))} selectedIndex={selectedIndex} onSelectedIndexChange={setSelectedIndex} description="Design reference. Confirm materials, dimensions and finishes in your project quote." />
     </section>
   );
 }

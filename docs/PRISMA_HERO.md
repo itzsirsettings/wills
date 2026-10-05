@@ -36,23 +36,26 @@ The main overlay's black opacity changed from 65%/68%/88% to 47.5%/52%/82%. That
 
 ## Entrance gallery
 
-The supplied sticky-scroll gallery is adapted at `src/components/ui/sticky-scroll.tsx`: three columns with one large pinned center design on suitable desktop screens, and the existing native sticky stack of all 33 cards on mobile. Following the user's height correction, previews retain their professional 4:5 portrait frames instead of being shortened to fit three center images at once. The gallery heading and description are centered. All category filters, counts, responsive AVIF/WebP images, lightbox focus handling and on-demand video selection remain in `ProjectGallery`. All filtered designs are now available directly on desktop as well. Short landscape screens use normal scrolling.
+The supplied sticky-scroll gallery is adapted at `src/components/ui/sticky-scroll.tsx`: three columns with three pinned center designs on suitable desktop screens, and the existing native sticky stack of all 33 cards on mobile. The center previews have different heights, using 40%, 34% and 26% of the image space available beneath the navbar after reserving room for gaps. Minimum heights preserve usability on short screens; the measured stack returns to normal scrolling when it cannot fit. Gallery images use `object-fit: cover` to fill their frames; side columns and mobile previews retain their 4:5 portrait frames. The gallery heading and description are centered. Category filter buttons, their counts and visible card captions are removed, while all 33 designs, accessible image labels, responsive AVIF/WebP images, lightbox focus handling and on-demand video selection remain available. Visitors can enlarge each image to inspect the full design.
 
 **Decision:** Use the reference's CSS sticky layout with native browser scrolling, without adding a global Lenis root, another main landmark, template stock images or a second footer.
 
 **Alternatives:** Wrapping the whole app in the supplied Lenis root or copying its fixed stock-photo arrays.
 
-**Rationale:** The requested gallery effect needs only CSS positioning. Keep the existing anchor, reduced-motion, touch and lightbox behavior and avoid another animation dependency. Every preview uses the same portrait proportions. ResizeObserver enables the center pin only when the full card fits beneath the navbar. The optimized source dimensions remain unchanged.
+**Rationale:** The requested gallery effect needs only CSS positioning. Keep the existing anchor, reduced-motion, touch and lightbox behavior and avoid another animation dependency. The user's latest instruction requests three center images with distinct heights, superseding the single large center card. ResizeObserver enables the center pin only when the full stack fits beneath the navbar. The optimized source dimensions remain unchanged.
 
 **Revisit when:** The product explicitly requires scroll interpolation or synchronized canvas effects.
+
+Gallery buttons inside each column use block layout. Inline button baseline spacing otherwise adds blank height below every image; that makes a viewport-sized center stack exceed its measured height budget and disables the sticky class. The browser regression checks verify the actual pinned position after multiple scroll distances at desktop and tablet sizes.
 
 ## Validation and loading comparison
 
 Local validation on 2026-10-05:
 
-- Lint, TypeScript and normal production build passed.
-- 114 unit tests passed in 14 files. Command: `vitest run --maxWorkers=1 --no-file-parallelism --testTimeout=30000 --hookTimeout=60000`; extended runner timeouts accommodate this host's slow startup and media metadata checks.
-- 15 Edge/Playwright browser tests passed against the production preview, including 320/390/768/1440px widths, short landscape, 200% CSS zoom, focus targets, reduced motion, missing animation features, slideshow timing/wrap, sticky navigation/interiors, gallery proportions and filters, lightboxes, video selection, policies and contact interactions.
+- Lint, TypeScript, normal production build and the Cloudflare production build passed for the final gallery refinement.
+- The preceding release passed 114 unit tests in 14 files. Command: `vitest run --maxWorkers=1 --no-file-parallelism --testTimeout=30000 --hookTimeout=60000`; extended runner timeouts accommodate this host's slow startup and media metadata checks.
+- The preceding release passed 15 Edge/Playwright browser tests against the production preview, including 320/390/768/1440px widths, short landscape, 200% CSS zoom, focus targets, reduced motion, missing animation features, slideshow timing/wrap, sticky navigation/interiors, gallery proportions, lightboxes, video selection, policies and contact interactions.
+- The gallery refinement passed four focused Edge/Playwright tests after the final layout fix: responsive side previews and on-demand videos; all 33 mobile sticky cards; three distinct center heights pinned after multiple scroll distances at 1440x900 and 1024x768; filter/caption removal, image fill, keyboard focus return and enlarged-view interactions; and existing navigation/interiors behavior. Short landscape screens preserve normal scrolling. The other 13 browser cases passed during the broader run before the final gallery spacing correction. No new dependencies or media files were added.
 - The conservative hero text contrast bound over pure white imagery, including the brightest grain blend, passed the 4.5:1 check. No entrance movement or animation feature request occurs with reduced motion.
 
 Three cold-cache runs per version used the same 390×844px profile, 1.6Mbps download, 150ms network latency and 4× CPU slowdown:
@@ -74,8 +77,8 @@ Release only to the independent `itzsirsettings/wills` repository. Railway uses 
 
 Previous successful releases, verified before this change:
 
-- Git commit: `51583a209bebe06b880a72981c2ac11abf2d8bd8`.
-- Railway: `13024698-d4ab-4561-a4dc-4b0eaa579d8b`.
-- Cloudflare Pages: `7efb6ea7-ebf5-424f-812d-dfcb5db1821b`.
+- Git commit: `5f4ad08644b3775c9440ad6d607de422c6a14861`.
+- Railway: `2b268879-61f7-45a5-a550-c21977fb3c78`.
+- Cloudflare Pages: `eae9d7e8-b389-42c7-ae5c-618952bd4acc`.
 
 Restore the preceding release through each platform's deployment controls if required. Verify the restored commit, Railway `/api/health`, hero actions, navigation, and browser errors. Alternatively, revert the frontend change, push it, and rebuild/upload the same reverted commit to Pages.
