@@ -1,4 +1,5 @@
 import { forwardRef, useEffect, useId, useRef, useState, type ComponentPropsWithoutRef } from 'react';
+import { flushSync } from 'react-dom';
 import { Play } from 'lucide-react';
 
 export type ClipShape = 'clip-squiggle' | 'clip-rect' | 'clip-another';
@@ -30,10 +31,23 @@ function VideoCard({ item, active, clipPath, onSelect, onClose }: {
   const playerRef = useRef<HTMLVideoElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const [failed, setFailed] = useState(false);
+  const [playbackError, setPlaybackError] = useState<string | null>(null);
+  const startPlayback = () => {
+    const player = playerRef.current;
+    if (!player) return;
+    player.volume = 0.5;
+    player.muted = false;
+    void player.play().catch((error: unknown) => {
+      // Selecting another clip or closing removes this player's pending request.
+      if (!player.isConnected) return;
+      setPlaybackError(error instanceof DOMException && error.name === 'NotAllowedError'
+        ? 'Playback needs another tap. Use the video controls or try again.'
+        : 'This clip could not start. Try again or choose another clip.');
+    });
+  };
   useEffect(() => {
     if (!active) return;
     const player = playerRef.current;
-    if (player) { player.volume = 0.5; player.muted = false; }
     player?.focus({ preventScroll: true });
     const pauseWhenHidden = () => { if (document.hidden) player?.pause(); };
     document.addEventListener('visibilitychange', pauseWhenHidden);
@@ -42,13 +56,24 @@ function VideoCard({ item, active, clipPath, onSelect, onClose }: {
 
   return <figure className="clipped-media-card" data-active={active}>
     {active ? <span className="clipped-media-frame is-playing">
-      <video ref={playerRef} className="project-video clipped-media-video" src={item.src} poster={item.poster} controls autoPlay playsInline preload="metadata" tabIndex={0} aria-label={item.alt + ' video'} onError={() => setFailed(true)}>Your browser does not support video playback.</video>
-    </span> : <button ref={triggerRef} className="clipped-media-trigger" type="button" aria-label={item.alt} onClick={() => { setFailed(false); onSelect(); }}>
+      <video ref={playerRef} className="project-video clipped-media-video" src={item.src} poster={item.poster} controls playsInline preload="metadata" tabIndex={0} aria-label={item.alt + ' video'} onError={() => setFailed(true)} onPlay={() => setPlaybackError(null)}>Your browser does not support video playback.</video>
+    </span> : <button ref={triggerRef} className="clipped-media-trigger" type="button" aria-label={item.alt} onClick={() => {
+      setFailed(false);
+      setPlaybackError(null);
+      // Mount the selected frame before requesting sound within this user gesture.
+      flushSync(onSelect);
+      startPlayback();
+    }}>
       <span className="clipped-media-frame" style={{ clipPath }}><img src={item.poster} alt="" loading="lazy" decoding="async" width="720" height="1080" /></span>
       <span className="clipped-media-play" aria-hidden="true"><Play size={24} fill="currentColor" /></span>
     </button>}
     <figcaption className="clipped-media-controls"><span>{item.alt}</span>{active && <button type="button" onClick={() => { onClose(); requestAnimationFrame(() => triggerRef.current?.focus()); }} aria-label={'Close ' + item.alt}>Close</button>}</figcaption>
-    {active && failed && <div className="video-error" role="alert"><p>This clip could not be loaded. Choose another clip or try again.</p><button type="button" onClick={() => { setFailed(false); playerRef.current?.load(); }}>Try again</button></div>}
+    {active && (failed || playbackError) && <div className="video-error" role="alert"><p>{failed ? 'This clip could not be loaded. Choose another clip or try again.' : playbackError}</p><button type="button" onClick={() => {
+      setFailed(false);
+      setPlaybackError(null);
+      if (failed) playerRef.current?.load();
+      startPlayback();
+    }}>Try again</button></div>}
   </figure>;
 }
 

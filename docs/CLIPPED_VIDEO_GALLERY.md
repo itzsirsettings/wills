@@ -8,6 +8,8 @@
 
 **Revisit when:** The company supplies replacement footage, requests a different preview arrangement, or measured poster transfer warrants further resizing.
 
+Live release checks found that relying on the video `autoplay` attribute left a subsequent clip paused with readyState 3 despite a preceding user selection. Explicit `play()` succeeded. Preview selection therefore mounts the player with React's `flushSync`, sets sound to 50%, and requests playback synchronously within the original click or keyboard gesture. Promise rejection produces a retry message, and native controls stay available. A pending request from a player already removed by closing or selecting another clip is discarded. The browser regression records explicit play requests and checks that user activation is still active.
+
 The existing gallery, three sticky center images, all 33 image references and caption/filter removal remain outside this component. Video files continue to use Railway on the Cloudflare build, where native range requests are supported; optimized posters stay on the same origin as the frontend.
 
 ## Validation and release

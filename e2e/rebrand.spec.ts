@@ -161,6 +161,14 @@ test('gallery side previews stay uniform and videos load only after selection', 
 test('clipped video previews adapt to screens, keyboard input and playback failures', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.addInitScript(() => localStorage.setItem('wills-group:cookie-consent', 'accepted'));
+  await page.addInitScript(() => {
+    const originalPlay = HTMLMediaElement.prototype.play;
+    HTMLMediaElement.prototype.play = function () {
+      this.dataset.explicitPlay = 'true';
+      this.dataset.gestureActive = String(navigator.userActivation.isActive);
+      return originalPlay.call(this);
+    };
+  });
   const requests: string[] = [];
   page.on('request', request => { if (/\.mp4(?:\?|$)/.test(request.url())) requests.push(request.url()); });
   await page.goto('/');
@@ -187,6 +195,8 @@ test('clipped video previews adapt to screens, keyboard input and playback failu
   await expect(player).toBeFocused();
   await expect(player).toHaveAttribute('controls', '');
   await expect(player).toHaveAttribute('playsinline', '');
+  await expect(player).toHaveAttribute('data-explicit-play', 'true');
+  await expect(player).toHaveAttribute('data-gesture-active', 'true');
   expect(await player.evaluate(video => ({ volume: (video as HTMLVideoElement).volume, muted: (video as HTMLVideoElement).muted }))).toEqual({ volume: 0.5, muted: false });
   expect(await player.evaluate(video => Boolean(video.closest('.clipped-media-card .clipped-media-frame')))).toBe(true);
   await expect.poll(() => player.evaluate(video => (video as HTMLVideoElement).readyState), { timeout: 15000 }).toBeGreaterThanOrEqual(1);
